@@ -53,27 +53,148 @@ data <- supunsup::supunsup_clean %>%
          trueCatNum = as.numeric(trueCat),
          respCatNum = as.numeric(respCat))
 
+library(ggplot2)
+theme_set(theme_bw())
+
+library(lme4)
+
+@
+
+
+
+\section{Experiment}
+\label{sec:experiment}
+
+\subsection{Methods}
+\label{sec:methods}
+
+\subsubsection{Subjects}
+\label{sec:subjects}
+
+<<participants>>=
 n_subj <- data %>% group_by(subject) %>% summarise() %>% tally()
 
 excluded <- supunsup::supunsup_excluded %>%
   filter(supCond == 'unsupervised') %>%
   group_by(subject) %>% 
   summarise() %>% 
-  right_join(supunsup::excludes)
+  right_join(supunsup::excludes) %>%
+  select(subject, exclude80PercentAcc, rank)
 
-supunsup::supunsup_excluded %>% 
-  filter(supCond == 'unsupervised') %>%
-  group_by(subject) %>% 
-  summarise() %>%
-  tally()
+n_excluded <- nrow(excluded)
+n_subj_repeat <- sum(!is.na(excluded$rank))
+n_subj_bad <- sum(!is.na(excluded$exclude80PercentAcc))
+n_both <- n_subj_repeat + n_subj_bad - n_excluded 
 
-library(ggplot2)
-theme_set(theme_bw())
+n_total <- n_subj + n_excluded
 
-@
+@ 
+
+We recruited \Sexpr{n_total} subjects via Amazon's Mechanical Turk, who were paid \$2.00 for participation, which took about 20 minutes. We excluded subjects who participated more than once ($n=\Sexpr{n_subj_repeat}$) or whose accuracy at \ms{0} and \ms{70} VOT---as extrapolated via a logistic GLM---was less than 80\% correct ($n=\Sexpr{n_subj_bad}$; $n=\Sexpr{n_both}$ for both reasons). After these exclusions, data from \Sexpr{n_subj} subjects remained for analysis for analysis.
+
+\subsubsection{Procedure}
+\label{sec:procedure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figure_manual/beach_peach.png}
+  \caption{Example trial display (beach/peach). Listeners first click on the green button to play the word, then click on one picture to indicate what they heard.}
+  \label{fig:beach-peach}
+\end{figure}
+
+
+\begin{figure*}[]
+\centering
+
+<<input-vs-prior-stats, fig.width=8, fig.height=2, out.width="\\textwidth">>=
+
+## copied from NIPS paper #######################################
+
+## prior parameters from Kronrod et al. (CogSci 2012)
+prior_stats <- data.frame(category=factor(c('b', 'p')),
+                          mean = c(0, 60),
+                          sd = sqrt(c(14, 254)))
+
+exposure_stats <- data %>%
+  group_by(bvotCond, category=trueCat) %>%
+  summarise(mean=mean(vot), sd=sd(vot))
+
+sd_noise = sqrt(82)
+
+stats_to_lhood <- function(stats, noise_sd=sd_noise) {
+  stats %>%
+    group_by(category, mean, sd) %>%
+    do(data.frame(vot=seq(-30, 90, 0.5))) %>%
+    ungroup() %>%
+    mutate(lhood = dnorm(vot, mean, sqrt(sd^2 + noise_sd^2))) %>%
+    select(-mean, -sd)
+}
+
+exposure_lhood <- exposure_stats %>%
+  group_by(bvotCond) %>%
+  do(stats_to_lhood(., sd_noise))
+
+prior_lhood <- prior_stats %>% stats_to_lhood(sd_noise)
+
+data %>%
+  group_by(bvotCond, vot) %>%
+  filter(subject == first(subject)) %>%
+  tally() %>%
+  ggplot(aes(x=vot)) +
+  geom_bar(stat='identity', aes(y=n, fill=bvotCond)) +
+  geom_line(data=prior_lhood, aes(y=lhood*1600, group=category),
+            color="black", linetype=2) +
+  geom_text(data=data.frame(bvotCond=-10), x = 10, y = 60,
+            label = 'Typical Talker',
+            color='black', hjust=0, vjust=0.3, size=3) +
+  geom_text(data=data.frame(bvotCond=-10), x = 40, y = 50,
+            label = 'Exposure\nTalker',
+            color=hcl(h=15, c=100, l=65), hjust=0, vjust=0.8, size=3,
+            lineheight=1) + 
+  facet_grid(.~bvotCond) +
+  scale_x_continuous('VOT (ms)') +
+  scale_y_continuous('Frequency') +
+  scale_fill_discrete('/b/ mean\nVOT') +
+  theme(legend.position='none')
+
+@ 
+
+\caption{Each subject heard one of these five synthetic accents, which differ only in the distribution of VOTs of the word-initial stops. Black dashed lines show VOT distributions from a hypothetical typical talker (as estimated by \citeNP{Kronrod2012}). Note that the 0 and 10ms shifted accents are reasonably close to this typical talker, while the $-10$, 20, and 30ms shifted accents deviate substantially.}
+\label{fig:vot-dists}
+
+\end{figure*}
+
+Our distributional learning procedure is largely the same as \citeA{Kleinschmidt2015a}, and is based on \citeA{Clayards2008}. On each trial, two response option images appeard, which corresponded to one of three /b/-/p/ minimal pairs (beach/peach, bees/peas, or beak/peak; Figure~\ref{fig:beach-peach}). Subjects then clicked on a central button which played the corresponding minimal pair word, and then clicked on the picture to indicate whether they heard the /b/ or /p/ member of the minimal pair.  Subjects performed 222 of these trials.  
+
+Each trial's word was synthesized with a voice onset time (VOT) that was randomly drawn from a bimodal distribution, with low and high VOT clusters implicitly corresponding to /b/ and /p/, respectively.  This distribution defined the \emph{accent} that the subject heard, and each subject was pseudorandomly assigned to one of five accent conditions (Figure~\ref{fig:vot-dists}).
+
+\subsection{Results}
+\label{sec:results}
+
+<<regression, eval=FALSE>>=
+data_lmer <- supunsup::mutate_for_lmer(data)
+
+## double check that contrasts are helmert coded...
+contrasts(data_lmer$bvotCond)
+
+mod <- glmer(respP ~ vot_rel.s * trial.s * bvotCond + (1 + vot_rel.s*trial.s | subject),
+             data_lmer, family='binomial')
+
+@ 
 
 
 
+\subsection{Discussion}
+\label{sec:discussion}
+
+
+
+
+\section{Model}
+\label{sec:model}
+
+\section{Conclusion}
+\label{sec:conclusion}
 
 
 
