@@ -1,0 +1,89 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{cogsci}
+\usepackage{pslatex}
+\usepackage{apacite}
+\usepackage{siunitx}
+\usepackage{dcolumn}
+
+\usepackage{subcaption}
+
+\usepackage{tipx}
+\newcommand{\ph}[1]{\protect\textipa{/#1/}}
+\newcommand{\aph}[1]{\protect\textipa{[#1]}}
+
+\newcommand{\ms}[1]{\SI{#1}{\milli\second}}
+
+\title{What do you expect from an unfamiliar talker?}
+ 
+\author{{\large \bf Dave F. Kleinschmidt$^1$}, and 
+   {\large \bf T. Florian Jaeger$^{1,2,3}$} \\
+   \texttt{\{dkleinschmidt, fjeager\} $@$ bcs.rochester.edu} \\
+  $^1$Department of Brain and Cognitive Sciences, $^2$Department of Computer Science, and $^3$Department of Linguistics, \\
+  University of Rochester, Rochester, NY, 14607 USA}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\textbf{Keywords:} Cognitive Science, Linguistics, Psychology, Language understanding, Learning, Speech recognition
+\end{abstract}
+
+
+
+<<preamble, echo=FALSE, results='hide', warning=FALSE, message=FALSE>>=
+
+knitr::opts_chunk$set(echo=FALSE,
+                      results='hide',
+                      message=FALSE,
+                      warning=FALSE,
+                      error=FALSE)
+
+library(supunsup)
+
+library(dplyr)
+library(tidyr)
+library(magrittr)
+
+data <- supunsup::supunsup_clean %>%
+  filter(supCond == 'unsupervised') %>%
+  mutate(subjNum = as.numeric(factor(subject)),
+         trueCatNum = as.numeric(trueCat),
+         respCatNum = as.numeric(respCat))
+
+n_subj <- data %>% group_by(subject) %>% summarise() %>% tally()
+
+excluded <- supunsup::supunsup_excluded %>%
+  filter(supCond == 'unsupervised') %>%
+  group_by(subject) %>% 
+  summarise() %>% 
+  right_join(supunsup::excludes)
+
+supunsup::supunsup_excluded %>% 
+  filter(supCond == 'unsupervised') %>%
+  group_by(subject) %>% 
+  summarise() %>%
+  tally()
+
+library(ggplot2)
+theme_set(theme_bw())
+
+@
+
+
+
+
+
+
+\bibliographystyle{apacite}
+
+\setlength{\bibleftmargin}{.125in}
+\setlength{\bibindent}{-\bibleftmargin}
+
+\bibliography{/Users/dkleinschmidt/Documents/papers/library-clean}
+
+
+
+\end{document}
