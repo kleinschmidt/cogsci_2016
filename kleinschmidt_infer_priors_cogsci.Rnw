@@ -177,12 +177,91 @@ data_lmer <- supunsup::mutate_for_lmer(data)
 ## double check that contrasts are helmert coded...
 contrasts(data_lmer$bvotCond)
 
-mod <- glmer(respP ~ vot_rel.s * trial.s * bvotCond + (1 + vot_rel.s*trial.s | subject),
+## basically anything more than this doesn't converge...
+mod <- glmer(respP ~ vot_rel.s * trial.s + bvotCond + (1 | subject),
              data_lmer, family='binomial')
 
 @ 
 
+\begin{figure*}
+  \centering
 
+<<class-curves, fig.height=2, fig.width=8, out.width="\\textwidth">>=
+## generate predicted classification functions assuming Bayes-optimal classifier
+## + noise
+
+lhood_to_classification <- function(lhood) {
+  lhood %>%
+    spread(category, lhood) %>%
+    mutate(prob_p = p / (p+b))
+}
+
+perfect_learning <- exposure_stats %>%
+  group_by(bvotCond) %>%
+  do(stats_to_lhood(.)) %>%
+  lhood_to_classification
+
+no_learning <- prior_stats %>%
+  stats_to_lhood %>%
+  lhood_to_classification
+
+prior_bound <- no_learning %>%
+  arrange(abs(prob_p - 0.5)) %>%
+  filter(row_number() ==1) %$%
+  vot
+
+
+boundaries <- data %>%
+  group_by(bvotCond, subject) %>%
+  do({ glm(respP ~ vot, family='binomial', data=.) %>%
+         broom::tidy() %>%
+         select(term, estimate)
+  }) %>%
+  ungroup() %>%
+  spread(term, estimate) %>%
+  mutate(boundary = -`(Intercept)` / vot,
+         ideal_boundary = as.numeric(as.character(bvotCond)) + 20,
+         prior_boundary = prior_bound,
+         prop_shift = (boundary-prior_boundary)/(ideal_boundary-prior_boundary))
+
+boundary_summary <- boundaries %>%
+  group_by(bvotCond) %>%
+  summarise(median_shift_perc = round(100*median(prop_shift)),
+            shift_text = paste(median_shift_perc, '%', sep='')) %>%
+  filter(bvotCond != 0)                 # basically no shift possible
+
+
+ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
+  geom_line(aes(group=subject), stat='smooth', method='glm', family='binomial', alpha=0.2) +
+  facet_grid(.~bvotCond) +
+  geom_line(data=perfect_learning, aes(y=prob_p), group=1, linetype=2, size=1) +
+  geom_line(data=no_learning, aes(y=prob_p), group=1, linetype=2, color='black') +
+  geom_text(data=data.frame(bvotCond=-10),
+            x = 30, y = 0, label = 'Typical\ntalker',
+            size = 3.5, hjust=0, vjust = 0, color='black',
+            lineheight=1) + 
+  geom_text(data=data.frame(bvotCond=-10),
+            x = 12, y = 1, label = 'Expo-\nsure',
+            size = 3.5, hjust=1, vjust=1, color=hcl(15, c=100, l=65),
+            lineheight=1, fontface='bold') + 
+  geom_text(data=data.frame(bvotCond=-10),
+            x = 90, y = 0.75, label = 'Actual\nlisteners',
+            size = 3.5, hjust=1, vjust=1, color=hcl(15, c=100, l=65),
+            lineheight=1) + 
+  ## geom_text(data=boundary_summary, aes(x=75, y=0.1, label=shift_text), color='black') + 
+  theme(legend.position='none') +
+  scale_x_continuous('VOT (ms)') +
+  scale_y_continuous('Probability /p/ response') + 
+  scale_color_discrete('/b/ mean\nVOT')
+
+
+@ 
+  
+  \caption{Listeners' responses, smoothed with logistic functions (thin lines), compared with the classification functions expected based on a typical talker (no learning; dashed black lines) and complete adaptation to the exposure distributions (thick dashed colored lines). Listeners' actual category boundaries lie between the typical talker and exposure talker boundaries.}
+  \label{fig:class-curves}
+\end{figure*}
+
+Figure~\ref{fig:class-curves} shows the classification functions for each individual listener. In each accent, these classification functions tend to fall in between the boundaries predicted by the typical talker distributions and the boundaries implied by the exposure distributions.  Moreover, in the 
 
 \subsection{Discussion}
 \label{sec:discussion}
