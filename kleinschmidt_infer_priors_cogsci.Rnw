@@ -60,7 +60,55 @@ library(lme4)
 
 @
 
+\section{Introduction}
+\label{sec:introduction}
 
+A longstanding problem in speech perception is how listeners manage to cope with
+substantial differences in how individual talkers produce speech.    Recent
+evidence suggests that one strategy listeners employ is to \emph{rapidly adapt}
+to unfamiliar talkers \cite[among
+others]{Bertelson2003,Clarke2004,Kraljic2005,Norris2003}.
+\citeA{Kleinschmidt2015} showed that such adaptation can be modeled as a form of
+statistical inference.  Each talker's particular accent (way of talking) can be
+formalized as the distribution of acoustic cues that they produce for each
+phonetic category (or other underlying linguistic unit).  When framed this way,
+listeners can adapt to an unfamiliar talker by inferring what those cue
+distributions look like, based on the cues that are actually produced by the talker.
+
+One insight that this \emph{ideal adapter} framework provides is that rapid
+adaptation to an unfamiliar depends just as much on a listener's prior
+experience with other talkers as it does on the speech produced by the
+unfamiliar talker themself.  A listener's experience with others talkers
+provides the starting point for the distributional learning required for
+adaptation, or, in Bayesian terms, a \emph{prior distribution} over possible
+accents (cue distributions).  More informative prior beliefs can substantially
+reduce the amount of direct evidence needed to converge on accurate beliefs
+about the current talker's cue distributions.
+
+In this study, we test a critical predcition of this framework.  To the extent
+that a listener's prior beliefs are informative, they must take some probability
+\emph{away} from unlikely accents.  Confronted by a talker whose accent falls
+well outside the range of what they expect based on their previous experience,
+the ideal adapter framework predicts that a listener will require more evidence
+to adapt, leading to slowed or incomplete adaptation.  There is some limited
+evidence that this is the case.  For instance, \citeA{Idemaru2011} found that
+listeners have difficulting adapting to a talker who produces anti-correlated
+distributions of two cues that are typically positively or un-correlated.
+\citeA{Sumner2011} found that listeners had trouble adapting to a talker who
+produced a distribution of cues for the /b/ and /p/ sounds that were
+substantially lower than a typical talker.  
+
+However, no studies have systematically probed whether and how a listener's
+prior expectations contrain rapid adaptation.  To that end, we expose listeners
+to a range of different accents, which differ in the cue distributions for /b/
+and /p/.  By parametrically manipulating these distributions, we create a range
+of accents that are more or less similar to what a typical talker of English
+produces.  We additionally sought to test a further predition. To the extent
+that a listener's prior expectations do, in fact, constrain their adaptation, it
+would be possible to \emph{infer} what the underlying prior belief distributions
+are.  This would provide a powerful method for investigating listeners'
+subjective prior beliefs that could be applied to other cues, categories, and
+even social variables (like gender, native language background, etc.).
 
 \section{Experiment}
 \label{sec:experiment}
