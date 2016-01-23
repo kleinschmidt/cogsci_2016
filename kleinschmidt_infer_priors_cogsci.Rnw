@@ -90,7 +90,13 @@ n_total <- n_subj + n_excluded
 
 @ 
 
-We recruited \Sexpr{n_total} subjects via Amazon's Mechanical Turk, who were paid \$2.00 for participation, which took about 20 minutes. We excluded subjects who participated more than once ($n=\Sexpr{n_subj_repeat}$) or whose accuracy at \ms{0} and \ms{70} VOT---as extrapolated via a logistic GLM---was less than 80\% correct ($n=\Sexpr{n_subj_bad}$; $n=\Sexpr{n_both}$ for both reasons). After these exclusions, data from \Sexpr{n_subj} subjects remained for analysis for analysis.
+We recruited \Sexpr{n_total} subjects via Amazon's Mechanical Turk, who were
+paid \$2.00 for participation, which took about 20 minutes. We excluded subjects
+who participated more than once ($n=\Sexpr{n_subj_repeat}$) or whose accuracy at
+\ms{0} and \ms{70} VOT---as extrapolated via a logistic GLM---was less than 80\%
+correct ($n=\Sexpr{n_subj_bad}$; $n=\Sexpr{n_both}$ for both reasons). After
+these exclusions, data from \Sexpr{n_subj} subjects remained for analysis for
+analysis.
 
 \subsubsection{Procedure}
 \label{sec:procedure}
@@ -98,7 +104,9 @@ We recruited \Sexpr{n_total} subjects via Amazon's Mechanical Turk, who were pai
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figure_manual/beach_peach.png}
-  \caption{Example trial display (beach/peach). Listeners first click on the green button to play the word, then click on one picture to indicate what they heard.}
+  \caption{Example trial display (beach/peach). Listeners first click on the
+    green button to play the word, then click on one picture to indicate what
+    they heard.}
   \label{fig:beach-peach}
 \end{figure}
 
@@ -159,14 +167,30 @@ data %>%
 
 @ 
 
-\caption{Each subject heard one of these five synthetic accents, which differ only in the distribution of VOTs of the word-initial stops. Black dashed lines show VOT distributions from a hypothetical typical talker (as estimated by \citeNP{Kronrod2012}). Note that the 0 and 10ms shifted accents are reasonably close to this typical talker, while the $-10$, 20, and 30ms shifted accents deviate substantially.}
+\caption{Each subject heard one of these five synthetic accents, which differ
+  only in the distribution of VOTs of the word-initial stops. Black dashed lines
+  show VOT distributions from a hypothetical typical talker (as estimated by
+  \citeNP{Kronrod2012}). Note that the 0 and 10ms shifted accents are reasonably
+  close to this typical talker, while the $-10$, 20, and 30ms shifted accents
+  deviate substantially.}
 \label{fig:vot-dists}
 
 \end{figure*}
 
-Our distributional learning procedure is largely the same as \citeA{Kleinschmidt2015a}, and is based on \citeA{Clayards2008}. On each trial, two response option images appeard, which corresponded to one of three /b/-/p/ minimal pairs (beach/peach, bees/peas, or beak/peak; Figure~\ref{fig:beach-peach}). Subjects then clicked on a central button which played the corresponding minimal pair word, and then clicked on the picture to indicate whether they heard the /b/ or /p/ member of the minimal pair.  Subjects performed 222 of these trials.  
+Our distributional learning procedure is described in \citeA{Kleinschmidt2015a},
+and is based on \citeA{Clayards2008}. On each trial, two response option images
+appeard, which corresponded to one of three /b/-/p/ minimal pairs (beach/peach,
+bees/peas, or beak/peak). Subjects then clicked on a central button which played
+the corresponding minimal pair word, and then clicked on the picture to indicate
+whether they heard the /b/ or /p/ member of the minimal pair.  Subjects
+performed 222 of these trials.
 
-Each trial's word was synthesized with a voice onset time (VOT) that was randomly drawn from a bimodal distribution, with low and high VOT clusters implicitly corresponding to /b/ and /p/, respectively.  This distribution defined the \emph{accent} that the subject heard, and each subject was pseudorandomly assigned to one of five accent conditions (Figure~\ref{fig:vot-dists}).
+Each trial's word was synthesized with a voice onset time (VOT) that was
+randomly drawn from a bimodal distribution, with low and high VOT clusters
+implicitly corresponding to /b/ and /p/, respectively.  This distribution
+defined the \emph{accent} that the subject heard, and each subject was
+pseudorandomly assigned to one of five accent conditions
+(Figure~\ref{fig:vot-dists}).
 
 \subsection{Results}
 \label{sec:results}
@@ -257,11 +281,18 @@ ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
 
 @ 
   
-  \caption{Listeners' responses, smoothed with logistic functions (thin lines), compared with the classification functions expected based on a typical talker (no learning; dashed black lines) and complete adaptation to the exposure distributions (thick dashed colored lines). Listeners' actual category boundaries lie between the typical talker and exposure talker boundaries.}
-  \label{fig:class-curves}
+\caption{Listeners' responses, smoothed with logistic functions (thin lines),
+  compared with the classification functions expected based on a typical talker
+  (no learning; dashed black lines) and complete adaptation to the exposure
+  distributions (thick dashed colored lines). Listeners' actual category
+  boundaries lie between the typical talker and exposure talker boundaries.}
+\label{fig:class-curves}
 \end{figure*}
 
-Figure~\ref{fig:class-curves} shows the classification functions for each individual listener. In each accent, these classification functions tend to fall in between the boundaries predicted by the typical talker distributions and the boundaries implied by the exposure distributions.  Moreover, in the 
+Figure~\ref{fig:class-curves} shows the classification functions for each
+individual listener. In each accent, these classification functions tend to fall
+in between the boundaries predicted by the typical talker distributions and the
+boundaries implied by the exposure distributions.  Moreover, in the
 
 \subsection{Discussion}
 \label{sec:discussion}
@@ -271,6 +302,7 @@ Figure~\ref{fig:class-curves} shows the classification functions for each indivi
 
 \section{Model}
 \label{sec:model}
+
 
 \section{Conclusion}
 \label{sec:conclusion}
