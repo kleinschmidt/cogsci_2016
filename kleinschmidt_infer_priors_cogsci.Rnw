@@ -302,9 +302,15 @@ boundary_summary <- boundaries %>%
             shift_text = paste(median_shift_perc, '%', sep='')) %>%
   filter(bvotCond != 0)                 # basically no shift possible
 
+## bootstrapped boundary summary
+boundaries %>% 
+  group_by(bvotCond) %>% 
+  do(boot_ci(., function(d,i) {mean(d$prop_shift[i])}))
+
 
 ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
-  geom_line(aes(group=subject), stat='smooth', method='glm', family='binomial', alpha=0.2) +
+  geom_line(aes(group=subject), stat='smooth', method='glm', 
+            method.args=list(family='binomial'), alpha=0.2) +
   facet_grid(.~bvotCond) +
   geom_line(data=perfect_learning, aes(y=prob_p), group=1, linetype=2, size=1) +
   geom_line(data=no_learning, aes(y=prob_p), group=1, linetype=2, color='black') +
