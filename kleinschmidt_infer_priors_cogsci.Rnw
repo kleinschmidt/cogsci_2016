@@ -14,6 +14,8 @@
 
 \newcommand{\ms}[1]{\SI{#1}{\milli\second}}
 
+\newcommand{\ud}{\mathrm{d}}
+
 \title{What do you expect from an unfamiliar talker?}
  
 \author{{\large \bf Dave F. Kleinschmidt$^1$}, and 
@@ -46,6 +48,7 @@ library(supunsup)
 library(dplyr)
 library(tidyr)
 library(magrittr)
+library(rstan)
 
 data <- supunsup::supunsup_clean %>%
   filter(supCond == 'unsupervised') %>%
@@ -305,7 +308,7 @@ boundary_summary <- boundaries %>%
 ## bootstrapped boundary summary
 boundaries %>% 
   group_by(bvotCond) %>% 
-  do(boot_ci(., function(d,i) {mean(d$prop_shift[i])}))
+  do(daver::boot_ci(., function(d,i) {mean(d$prop_shift[i])}))
 
 
 ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
@@ -356,6 +359,213 @@ boundaries implied by the exposure distributions.  Moreover, in the
 
 \section{Model}
 \label{sec:model}
+
+Our second goal in this paper is to test whether it is possible to infer
+listeners prior beliefs based on their patterns of adaptation to different
+accents. To that end, we use a variant of a Bayesian belief-updating model that
+has previously provided a good account of how listeners incrementally update
+their beliefs in order to rapidly adapt to an unfamiliar talker
+\cite{Kleinschmidt2011, Kleinschmidt2012c, Kleinschmidt2015}. Previous modeling
+work along these lines has treated the content of listeners prior beliefs---the
+category means and variances they think are most likely---as known and fixed,
+setting them based on pre-adaptation classification data, and then fitting the
+confidence in those prior beliefs as a free parameter. Here, we wish to fit both
+the content of (prior expected mean and variance of each category) and the
+confidence in prior beliefs, based on adaptation data presented above. 
+
+\subsection{Methods}
+\label{sec:methods-model}
+
+We denote the listener's beliefs about the \emph{current} talker's generative
+model as the parameters of a two-component mixture of gaussians
+\begin{equation}
+  \label{eq:1}
+  \theta = \{ \mu_\mathrm{b}, \sigma^2_\mathrm{b}, \mu_\mathrm{p},
+              \sigma^2_\mathrm{p} \}
+\end{equation}
+where $\mu$ is a category's mean VOT and $\sigma^2$ is its variance.  As in
+previous work, we use an independent, conjugate Normal-$\chi^2$ prior for each
+category, with parameters \cite{Gelman2003}
+\begin{eqnarray}
+  \label{eq:2}
+  \phi &=& \{ \mu_{0,\mathrm{b}}, \sigma^2_{\mathrm{b}}, 
+            \mu_{0,\mathrm{p}}, \sigma^2_{\mathrm{p}},
+            \kappa_0, \nu_0 \} \\
+  \label{eq:3}
+  \theta | \phi &\sim& \prod_{c \in \{\mathrm{b,p}\}} 
+    \mathrm{Normal}(\mu_c | \mu_{0,c}, \frac{\sigma_c^2}{\kappa_0})
+    \chi^{-2} (\sigma_c^2 | \sigma^2_{0,c}, \nu_0)
+\end{eqnarray}
+where $\mu_{0}$ and $\sigma^2_0$ are a category's prior expected mean VOT and
+variance, respectively, and $\kappa_0$ and $\nu_0$ are the listener's confidence
+in these prior expectations, measured as pseudo-counts.  
+Note that, as in previous modeling work in this framework, the prior confidence
+parameters are shared between the two categories. Preliminary simulations showed
+that it wasn't possible to uniquely identify the model using separate prior
+confidence parameters for the two categories.
+
+To estimate the listeners' prior beliefs, we infer values for these parameters
+given the observed adaptation behavior (category responses $y$ and input VOTs
+$x$) using Bayesian inference, marginalizing over $\theta$:
+
+\begin{eqnarray}
+  \label{eq:5}
+  p(\phi | x, y) &\propto& p(y | \phi, x) p(\phi) \\
+                 &\propto& \int \ud \theta p(y | \theta, x) p(\theta | x, \phi)
+                           p(\phi)
+\end{eqnarray}
+
+We make the simplifying assumptions that the order of the trials does not matter
+(exchangeability), and that for the purposes of belief updating
+($p(\theta | x, \phi)$) the category labels that we, the experimenters, assigned
+to each cluster are known.  This is equivalent to assuming that listeners pick
+up on the cluster structure of the input they receive, accurately detecting the
+mean and variance of each cluster, and finding a compromise between these
+observed statistics and their prior beliefs, possibly revising earlier decisions
+they made about assigning stimuli to one category or the other.  Backing off
+this assumption is possible but computationally trickier, and we leave it as a
+question for future work.  It does not, as far as we can determine, bias our
+results one way or the other.  Finally, we also add a small lapsing rate
+parameter, that allows for some proportion of responses to be attributed to
+random guessing (see \citeNP{Clayards2008} for a discussion).
+
+The posterior distributions of each of these parameters (the shared prior
+beliefs plus lapsing rate) were estimated using MCMC with the Stan software
+package \cite{Stan2015}.  Weakly informative hyperpriors were used that were
+centered at 0 with standard deviations of 100 for the prior expected means and
+variances (making them roughly constant over reasonable values) and four times
+the total number of observations for the prior confidence pseudocounts (covering
+the whole range from completely ignoring the prior to never adapting at
+all). The prior for the lapsing rate was uniform on $[0,1]$.  
+
+\subsection{Results}
+\label{sec:results-model}
+
+<<run-model>>=
+
+data_stan_conj <- data %>%
+  supunsup::supunsup_to_stan_conj()
+
+## mod_lapsing <- stan('../../modeling/stan/conj_id_lapsing_fit.stan')
+
+## fit_lapsing <- stan(fit = mod_lapsing,
+##                     data = data_stan_conj,
+##                     chains = 4,
+##                     iter = 1000)
+
+## head(summary(fit_lapsing)$summary, n=10)
+
+## summary_lapsing <- summary(fit_lapsing)$summary
+## samples_lapsing <- rstan::extract(fit_lapsing)
+
+## saveRDS(samples_lapsing, file='data/samples_lapsing.rds')
+## saveRDS(summary_lapsing, file='data/summary_lapsing.rds')
+
+mod_samples <- readRDS('data/samples_lapsing.rds')
+mod_summary <- readRDS('data/summary_lapsing.rds')
+
+## rename dimensions to make melting easier
+rename_dims <- function(x, var, new_names) {
+  names(dimnames(x[[var]])) <- new_names
+  return(x)
+}
+
+mod_samples %<>%
+  rename_dims('mu_0', c('iterations', 'cat_num')) %>%
+  rename_dims('sigma_0', c('iterations', 'cat_num')) %>%
+  rename_dims('mu_n', c('iterations', 'cat_num', 'subject_num')) %>%
+  rename_dims('sigma_n', c('iterations', 'cat_num', 'subject_num')) %>%
+  rename_dims('kappa_n', c('iterations', 'cat_num', 'subject_num')) %>%
+  rename_dims('nu_n', c('iterations', 'cat_num', 'subject_num'))
+  
+
+max_Rhat <- max(mod_summary[, 'Rhat'])
+lapse_rate <- mean(mod_samples$lapse_rate)
+
+## correspondence between subject IDs and subject indices in model
+subjects <-
+  data %>%
+  mutate(subject_num = as.numeric(factor(subject))) %>%
+  group_by(subject, bvotCond, subject_num) %>%
+  summarise() %>%
+  arrange(subject_num)
+
+categories <-
+  data_frame(cat_num = 1:2,
+             category = c('b', 'p'))
+
+melt_samples <- function(samlpes, varname) {
+  reshape2::melt(mod_samples[[varname]], value.name=varname) %>%
+    tbl_df
+}
+  
+
+prior_samples_df <- 
+  c('mu_0', 'sigma_0', 'kappa_0', 'nu_0') %>%
+  map( ~ melt_samples(mod_samples, .x)) %>%
+  reduce(inner_join) %>%
+  tbl_df %>%
+  left_join(categories)
+
+updated_samples_df <- 
+  c('mu_n', 'sigma_n', 'kappa_n', 'nu_n') %>%
+  map( ~ melt_samples(mod_samples, .x)) %>%
+  reduce(inner_join) %>%
+  tbl_df %>%
+  left_join(categories) %>%
+  left_join(subjects) %>%
+  group_by(bvotCond) %>%
+  filter(subject == first(subject))     # just need one per condition
+
+lapse_rate_samples <- melt_samples(mod_samples, 'lapse_rate')
+
+@ 
+
+\begin{figure*}[ht]
+  \centering
+<<model-classifications, fig.width=8, fig.height=2, out.width='\\textwidth'>>=
+
+some_iterations <- 
+  updated_samples_df %>%
+  group_by(iterations) %>%
+  summarise() %>%
+  sample_n(200)
+
+mod_class_funs <- 
+  updated_samples_df %>%
+  right_join(some_iterations) %>%
+  mutate(mean=mu_n, sd=sigma_n) %>%
+  select(iterations, bvotCond, category, mean, sd) %>%
+  group_by(iterations, bvotCond) %>%
+  do(stats_to_lhood(., noise_sd=0)) %>%
+  lhood_to_classification() %>%
+  left_join(lapse_rate_samples) %>%
+  mutate(prob_p = (1-lapse_rate)*prob_p + lapse_rate/2) %>%
+  select(bvotCond, vot, prob_p) %>%
+  group_by(bvotCond, vot) %>%
+  summarise(prob_p_low = quantile(prob_p, 0.025),
+            prob_p_high = quantile(prob_p, 0.975),
+            prob_p = mean(prob_p))
+
+data_by_subject <- data %>%
+  group_by(subject, bvotCond, vot) %>%
+  summarise(prob_p = mean(respP))
+
+
+ggplot(mod_class_funs, aes(x=vot, y=prob_p, color=bvotCond, fill=bvotCond)) +
+  geom_ribbon(aes(ymin=prob_p_low, ymax=prob_p_high), size=0, alpha=0.5) + 
+  geom_point(data = data_by_subject, stat='summary', fun.y='mean') + 
+  geom_linerange(data=data_by_subject, stat='summary', fun.data='mean_cl_boot') + 
+  facet_grid(.~bvotCond) +
+  scale_x_continuous('VOT (ms)') +
+  scale_y_continuous('Probability /p/ response') + 
+  scale_color_discrete('/b/ mean\nVOT') + 
+  scale_fill_discrete('/b/ mean\nVOT')
+
+@ 
+  \caption{The classification functions (shaded ribbons, 95\% posterior predictive intervals) predicted by the belief updating model fit listeners' responses well (dots with lines showing bootstrapped 95\% confidence intervals).}
+  \label{fig:model-fit-classifications}
+\end{figure*}
 
 
 \section{Conclusion}
