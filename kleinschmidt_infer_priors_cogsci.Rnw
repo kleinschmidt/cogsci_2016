@@ -52,6 +52,8 @@ library(supunsup)
 library(dplyr)
 library(tidyr)
 library(magrittr)
+library(stringr)
+
 library(rstan)
 
 data <- supunsup::supunsup_clean %>%
@@ -74,7 +76,7 @@ A longstanding problem in speech perception is how listeners manage to cope with
 substantial differences in how individual talkers produce speech.    Recent
 evidence suggests that one strategy listeners employ is to \emph{rapidly adapt}
 to unfamiliar talkers \cite[among
-others]{Bertelson2003,Clarke2004,Kraljic2005,Norris2003}.
+others]{Bertelson2003,Clarke2004,Kraljic2007,Norris2003}.
 \citeA{Kleinschmidt2015} showed that such adaptation can be modeled as a form of
 statistical inference.  Each talker's particular accent (way of talking) can be
 formalized as the distribution of acoustic cues that they produce for each
