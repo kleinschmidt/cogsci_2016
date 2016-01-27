@@ -420,7 +420,10 @@ estimating the percentage is numerically unstable). More interestingly, the more
 extreme conditions show less complete adaptation than the less extreme conditions.
 Together, these results suggest that listeners' adaptation was constrained by
 their prior expectations (given the finite amount of evidence they received
-about the unfamiliar talker).
+about the unfamiliar talker).  This provides qualitative evidence that listeners
+combine their prior expectations with observed cue distributions in order to
+rapidly adapt to unfamiliar talkers, as predicted by the ideal adapter framework
+\cite{Kleinschmidt2015}.
 
 \section{Model}
 \label{sec:model}
@@ -834,17 +837,42 @@ amount of exposure, listeners recalibrate a /d/-/t/ contrast (analogous to the
 /b/-/p/ contrast used here) much less than an /s/-\ph S contrast (where there is
 substantial variability across talkers; \citeNP{McMurray2011a, Newman2001}).
 
-<<>>=
-
-@ 
-
-
 \section{Conclusion}
 \label{sec:conclusion}
 
+A central prediction of the ideal adapter framework \cite{Kleinschmidt2015} is
+that listeners adapt to unfamiliar talkers by combining their prior beliefs with
+observed evidence about that particular talker's cue distributions.  In this
+paper, we have shown first that for a range of different accents (cue
+distributions), listeners' behavior in a distributional learning experiment
+reflects a compromise between what would be expected for the cue distributions
+produced by a typical talker and the exposure talker.  Second we have shown that
+the range of adaptation behavior observed across the various accents listeners
+heard can be captured by a single belief-updating model, which assumes that
+listeners start from shared prior expectations and update them based on
+experience with the exposure talker. 
 
+These results emphasize the importance of listeners' prior expectations for
+robust speech perception in the face of talker variability.  Even if all the
+listener knows about the talker is that they are speaking English, they can
+still benefit from prior experience with other speakers of English to provide an
+informative head start for adaptation.
+The modeling framework we use has the additional advantage of allowing us to
+\emph{infer} what cue distributions listeners believe an unfamiliar talker will
+produce. This provides a potentially powerful---and heretofore missing---tool
+for probing listeners' prior expectations, based only on comprehension
+data. These beliefs reflect what listeners have learned about the variability
+they can expect across talkers, and probing how this internal model is
+related to the \emph{actual} variability across talkers (measured via speech
+production data) is an important next step in advancing our understanding of
+robust speech perception.  
 
-
+More generally, prior knowledge is increasingly understood to play in important
+role in a number of perceptual and memory domains
+\cite<e.g.,>{Brady2009,Brady2013,Froyen2015a,Orhan2011}.  Distributional
+learning provides an approach to probing prior expectations about the
+\emph{statistics} of the sensory world, which, as in speech perception, are
+critical to effectively coping with non-stationarity in sensory statistics.
 
 \bibliographystyle{apacite}
 
