@@ -420,8 +420,8 @@ model as the parameters of a two-component mixture of gaussians
               \sigma^2_\mathrm{p} \}
 \end{equation}
 where $\mu$ is a category's mean VOT and $\sigma^2$ is its variance.  As in
-previous work, we use an independent, conjugate Normal-$\chi^2$ prior for each
-category, with parameters \cite{Gelman2003}
+\citeA{Kleinschmidt2015}, we use an independent, conjugate Normal-$\chi^2$ prior
+for each category, with parameters \cite{Gelman2003}
 \begin{eqnarray}
   \label{eq:2}
   \phi &=& \{ \mu_{0,\mathrm{b}}, \sigma^2_{\mathrm{b}}, 
@@ -664,7 +664,10 @@ prior_summary <-
   group_by(stat) %>%
   summarise(mean=mean(value), 
             low=quantile(value, 0.025), 
-            high=quantile(value, 0.975))
+            high=quantile(value, 0.975)) %>%
+  mutate(units = ifelse(str_detect(stat, '(kappa|nu)'), 
+                        'observations', 
+                        'ms VOT'))
 
 prior_expected <- prior_summary$mean
 names(prior_expected) <- prior_summary$stat
@@ -702,7 +705,8 @@ format_params <- function(s) {
 prior_summary %>% 
   transmute(Parameter = format_params(stat),
             Expected = mean,
-            `95\\% HPD Interval` = sprintf('%.0f--%.0f', low, high)) %>%
+            `95\\% HPD Int.` = sprintf('%.0f--%.0f', low, high),
+            Units = units) %>%
   as.data.frame() %>%
   knitr::kable(format='latex', escape=FALSE)
 
@@ -755,7 +759,7 @@ what listeners think the underlying cue distributions are \cite{Kronrod2012}, as
 well as the distributions produced by actual talkers \cite{Lisker1964}.  In
 fact, the prior expected VOT distribution for /p/ that our model inferred is
 almost identical to that observed by both \citeA{Kronrod2012} and
-\cite{Lisker1964}.  The distribution for /b/ deviates from prior work,
+\citeA{Lisker1964}.  The distribution for /b/ deviates from prior work,
 however. One possible reason for this is that a substantial minority of English
 speakers produce prevoiced /b/ \cite{Lisker1964,Docherty2011}, which is
 characterized by a lower (negative) VOT and a higher variance (often higher even
@@ -765,28 +769,45 @@ prior distrbution, and the prior beliefs we inferred to be most likely are
 consistent with a compromise between the two types of /b/ distributions that
 talkers actually produce.  
 
-This is a possibility that requires further study. First, large-scale corpus
-studies of VOT distributions would be informative about the true underlying
-cross-talker variability in these distributions, but the only study of this type
-we are aware of considers only non-negative VOTs \cite{Chodroff2015} and cannot
-detect talkers who prevoice their /b/.  Second, more modeling work is needed to
-test whether a multimodal prior is justified given the adaptation data, and if
-so, whether it would change the inference about listeners' prior expectations
-for /b/.
+This possibility suggests two directions for future work. First, large-scale
+corpus studies of VOT distributions would be informative about the true
+underlying cross-talker variability in these distributions, but the only study
+of this type we are aware of considers only non-negative VOTs
+\cite{Chodroff2015} and thus excludes talkers who prevoice their /b/.  Second,
+more modeling work is needed to test whether a multimodal prior is justified
+given the adaptation data, and if so, whether it would change the inference
+about listeners' prior expectations for /b/.
 
 The other major result of this modeling is that listeners have high confidence
 in their prior expectations about the VOT distributions of /b/ and /p/, acting
-as if they had already observed around 200--800 samples (for the category means
-and variances, respectively) from the unfamiliar talker they encountered in our
-experiemnt.  This makes sense, given that there is not as much variability
-across talkers in VOT distributions \cite{Allen2003,Chodroff2015}.  As a result,
-past experience with other talkers' VOT distributions is, in principle, highly
-informative about the VOT distributions that an unfamiliar talker will produce,
-requiring less adaptation.  This leads naturally to the prediction that
-listeners will be less confident in their prior beliefs for cues and categories
-where there \emph{is} substantial variability across talkers, like spectral cues
-to fricatives \cite{McMurray2011a,Newman2001} or vowels
-\cite{Hillenbrand1995,Peterson1952}.
+as if they had already observed around 200--800 samples from each category (for
+the category means and variances, respectively) from the unfamiliar talker they
+encountered in our experiemnt.  These confidence values are one or two orders of
+magnitude higher than those inferred in other belief-updating modeling
+\cite{Kleinschmidt2015}.
+
+However, this previous work was based on adaptation to a /b/-/d/ contrast, which
+is cued by spectral cues (formant frequency transitions) which generally vary
+substantially across talkers \cite{Hillenbrand1995, Peterson1952} .  The
+acoustic cues to the /b/-/p/ contrast used in the current study do not show as
+much variability across talkers \cite{Allen2003, Chodroff2015}.  When there is
+little variability across talkers, past experience with other talkers' VOT
+distributions is highly informative about the distributions that an unfamiliar
+talker will produce, requiring less adaptation.  Likewise, when there is more
+variability across talkers, listeners need to rely more on the current talker's
+cue distributions and less on their prior experience.  Thus, the apparent
+discrepancy between the confidence that listeners place in their prior beliefs
+in the current study and in \citeA{Kleinschmidt2015} is entirely consistent with
+an ``ideal adapter'' which combines prior beliefs with current experience
+weighted according to confidence \cite{Kleinschmidt2015}.  This idea finds
+further empirical support in \citeA{Kraljic2007}, who found that after the same
+amount of exposure, listeners recalibrate a /d/-/t/ contrast (analogous to the
+/b/-/p/ contrast used here) much less than an /s/-\ph S contrast (where there is
+substantial variability across talkers; \citeNP{McMurray2011a, Newman2001}).
+
+<<>>=
+
+@ 
 
 
 \section{Conclusion}
