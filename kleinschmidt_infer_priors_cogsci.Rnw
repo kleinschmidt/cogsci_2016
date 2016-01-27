@@ -94,14 +94,14 @@ accents (cue distributions).  More informative prior beliefs can substantially
 reduce the amount of direct evidence needed to converge on accurate beliefs
 about the current talker's cue distributions.
 
-In this study, we test a critical predcition of this framework.  To the extent
+In this study, we test a critical prediction of this framework.  To the extent
 that a listener's prior beliefs are informative, they must take some probability
 \emph{away} from unlikely accents.  Confronted by a talker whose accent falls
 well outside the range of what they expect based on their previous experience,
 the ideal adapter framework predicts that a listener will require more evidence
 to adapt, leading to slowed or incomplete adaptation.  There is some limited
 evidence that this is the case.  For instance, \citeA{Idemaru2011} found that
-listeners have difficulting adapting to a talker who produces anti-correlated
+listeners have difficulty adapting to a talker who produces anti-correlated
 distributions of two cues that are typically positively or un-correlated.
 \citeA{Sumner2011} found that listeners had trouble adapting to a talker who
 produced a distribution of cues for the /b/ and /p/ sounds that were
@@ -112,7 +112,7 @@ prior expectations contrain rapid adaptation.  To that end, we expose listeners
 to a range of different accents, which differ in the cue distributions for /b/
 and /p/.  By parametrically manipulating these distributions, we create a range
 of accents that are more or less similar to what a typical talker of English
-produces.  We additionally sought to test a further predition. To the extent
+produces.  We additionally sought to test a further prediction. To the extent
 that a listener's prior expectations do, in fact, constrain their adaptation, it
 would be possible to \emph{infer} what the underlying prior belief distributions
 are.  This would provide a powerful method for investigating listeners'
@@ -236,7 +236,7 @@ data %>%
 
 Our distributional learning procedure is described in \citeA{Kleinschmidt2015a},
 and is based on \citeA{Clayards2008}. On each trial, two response option images
-appeard, which corresponded to one of three /b/-/p/ minimal pairs (beach/peach,
+appeared, which corresponded to one of three /b/-/p/ minimal pairs (beach/peach,
 bees/peas, or beak/peak). Subjects then clicked on a central button which played
 the corresponding minimal pair word, and then clicked on the picture to indicate
 whether they heard the /b/ or /p/ member of the minimal pair.  Subjects
@@ -761,7 +761,7 @@ belief-updating model is concerned, listeners updated beliefs reflected their
 prior belies as much as (in the case of the means) or more than (for the
 variances) the distributions they actually observed.  This is consistent with
 the qualitative finding that listeners' category boundaries are intermediate
-between the boundaires corresponding to a typical talker and the experimental
+between the boundaries corresponding to a typical talker and the experimental
 exposure talker.
 
 Figure~\ref{fig:inferred-prior} shows the cue distributions corresponding to the
@@ -770,7 +770,7 @@ given the behavioral data, compared with the distributions corresponding to a
 typical talker (as determined by a combination of classification and
 discrimination data, \citeNP{Kronrod2012}, see also \citeNP{Lisker1964}).  The
 inferred prior beliefs are in reasonably good agreement with this typical
-talker, with one excpetion: the mean for /b/ is slightly lower
+talker, with one exception: the mean for /b/ is slightly lower
 ($E(\mu_{0,\mathrm{b}}) = \Sexpr{prior_expected['mu_0_b']}$ ms), and the standard
 deviation of /b/ is slightly higher ($E(\sigma_{0,\mathrm{b}}) =
 \Sexpr{prior_expected['sigma_0_b']}$ ms).
@@ -793,11 +793,11 @@ fact, the prior expected VOT distribution for /p/ that our model inferred is
 almost identical to that observed by both \citeA{Kronrod2012} and
 \citeA{Lisker1964}.  The distribution for /b/ deviates from prior work,
 however. One possible reason for this is that a substantial minority of English
-speakers produce prevoiced /b/ \cite{Lisker1964,Docherty2011}, which is
+speakers produce pre-voiced /b/ \cite{Lisker1964,Docherty2011}, which is
 characterized by a lower (negative) VOT and a higher variance (often higher even
 than /p/).  That is, across talkers, the /b/ VOT distribution parameters (mean
 and variance) have a \emph{bimodal} distribution.  We assumed a single, unimodal
-prior distrbution, and the prior beliefs we inferred to be most likely are
+prior distribution, and the prior beliefs we inferred to be most likely are
 consistent with a compromise between the two types of /b/ distributions that
 talkers actually produce.  
 
@@ -805,7 +805,7 @@ This possibility suggests two directions for future work. First, large-scale
 corpus studies of VOT distributions would be informative about the true
 underlying cross-talker variability in these distributions, but the only study
 of this type we are aware of considers only non-negative VOTs
-\cite{Chodroff2015} and thus excludes talkers who prevoice their /b/.  Second,
+\cite{Chodroff2015} and thus excludes talkers who pre-voice their /b/.  Second,
 more modeling work is needed to test whether a multimodal prior is justified
 given the adaptation data, and if so, whether it would change the inference
 about listeners' prior expectations for /b/.
@@ -814,7 +814,7 @@ The other major result of this modeling is that listeners have high confidence
 in their prior expectations about the VOT distributions of /b/ and /p/, acting
 as if they had already observed around 200--800 samples from each category (for
 the category means and variances, respectively) from the unfamiliar talker they
-encountered in our experiemnt.  These confidence values are one or two orders of
+encountered in our experiment.  These confidence values are one or two orders of
 magnitude higher than those inferred in other belief-updating modeling
 \cite{Kleinschmidt2015}.
 
