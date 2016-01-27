@@ -533,16 +533,39 @@ lapse_rate_samples <- melt_samples(mod_samples, 'lapse_rate')
 
 @ 
 
-\begin{figure*}[ht]
+<<model-goodness-of-fit>>=
+
+mod_goodness_of_fit <- 
+  data.frame(data_stan_conj$z_test_counts) %>%
+  tbl_df() %>%
+  mutate(prob_p = apply(mod_samples$p_test_conj[, , 2], 2, mean),
+         prob_p_lapse = prob_p * (1-lapse_rate) + lapse_rate/2,
+         LL_mod = dbinom(x = p, size = b+p, prob = prob_p_lapse, log = TRUE),
+         LL_null = dbinom(x = p, size = b+p, prob = mean(p/(b+p)), log = TRUE)) %>%
+  summarise(LL_mod = sum(LL_mod),
+            LL_null = sum(LL_null),
+            rho = cor(p/(b+p), prob_p_lapse, method='spearman'),
+            n = n()) %>%
+  mutate(LL_ratio = LL_mod - LL_null,
+         pseudo_R2_mcfadden = 1 - LL_mod/LL_null,
+         pseudo_R2_nagelkerke = (1 - exp(2/n * -LL_ratio)) / (1-exp(2/n*LL_null)))
+
+@ 
+
+\begin{figure*}[htb]
   \centering
 <<model-classifications, fig.width=8, fig.height=2, out.width='\\textwidth'>>=
 
+## pick a random subset of iterations to do the MCMC integration for posterior
+## predictive checks
 some_iterations <- 
   updated_samples_df %>%
   group_by(iterations) %>%
   summarise() %>%
   sample_n(200)
 
+## convert samples into distributions and then classification functions for each
+## condition
 mod_class_funs <- 
   updated_samples_df %>%
   right_join(some_iterations) %>%
@@ -564,6 +587,8 @@ data_by_subject <- data %>%
   summarise(prob_p = mean(respP))
 
 
+
+## plot observed and model-predicted classification functions
 ggplot(mod_class_funs, aes(x=vot, y=prob_p, color=bvotCond, fill=bvotCond)) +
   geom_ribbon(aes(ymin=prob_p_low, ymax=prob_p_high), size=0, alpha=0.5) + 
   geom_point(data = data_by_subject, stat='summary', fun.y='mean') + 
@@ -575,9 +600,161 @@ ggplot(mod_class_funs, aes(x=vot, y=prob_p, color=bvotCond, fill=bvotCond)) +
   scale_fill_discrete('/b/ mean\nVOT')
 
 @ 
-  \caption{The classification functions (shaded ribbons, 95\% posterior predictive intervals) predicted by the belief updating model fit listeners' responses well (dots with lines showing bootstrapped 95\% confidence intervals).}
-  \label{fig:model-fit-classifications}
+\caption{The classification functions (shaded ribbons, 95\% posterior predictive
+  intervals) predicted by the belief updating model fit listeners' responses
+  well (dots with lines showing bootstrapped 95\% confidence intervals).}
+\label{fig:model-fit-classifications}
 \end{figure*}
+
+The first way we evaluate this model is to ask how well it fits listeners'
+behavior. Figure~\ref{fig:model-fit-classifications} shows listeners' average
+classification functions, compared with the posterior predictive classification
+functions from the belief-updating model.  The first thing to notice is that the
+model fits the data well (log-likelihood ratio vs. an intercept-only binomial
+null model of \Sexpr{round(mod_goodness_of_fit[['LL_ratio']])} and Spearman's
+$\rho$ = \Sexpr{mod_goodness_of_fit[['rho']]}) capturing the different
+classification functions that result from exposure to each input distribution.
+This in and of itself is an interesting result: it shows that there does exist
+some set of prior beliefs such that the range of adaptation behavior we observed
+can be explained by a model where all listeners start from a common set of prior
+beliefs.
+
+\begin{figure}[htb]
+  \centering
+<<inferred-prior, fig.width=4, fig.height=2, out.width='\\columnwidth'>>=
+
+prior_summary <- 
+  prior_samples_df %>% 
+  gather('stat', 'val', mu_0:sigma_0) %>% 
+  unite(stat_cat, stat, category) %>% 
+  select(-cat_num) %>% spread(stat_cat, val) %>%
+  gather('stat', 'value', kappa_0:sigma_0_p) %>% 
+  group_by(stat) %>%
+  summarise(mean=mean(value), 
+            low=quantile(value, 0.025), 
+            high=quantile(value, 0.975))
+
+prior_expected <- prior_summary$mean
+names(prior_expected) <- prior_summary$stat
+
+prior_samples_df %>% 
+  group_by(category) %>% 
+  summarise(mean = mean(mu_0), sd = mean(sigma_0)) %>%
+  stats_to_lhood(noise_sd = 0) %>%
+  ggplot(aes(x=vot, y=lhood, group=category)) +
+  geom_line(aes(linetype='Inferred\nprior')) +
+  geom_line(data=prior_lhood, aes(linetype='Kronrod et\nal. (2012)')) +
+  scale_linetype_discrete('Source') +
+  scale_x_continuous('VOT (ms)') +
+  scale_y_continuous('Likelihood')
+
+@ 
+  
+\caption{Expected cue distributions based on inferred prior beliefs from
+  adaptation data (solid lines). Plotted with VOT distributions measured by
+  \protect\citeA{Kronrod2012} based on a combination of classification and
+  discrimination behavior (dashed lines).}
+  \label{fig:inferred-prior}
+\end{figure}
+
+\begin{table}[htb]
+  \centering
+<<inferred-prior-params, results='asis'>>=
+
+format_params <- function(s) {
+  s %>%
+    str_replace('_0_([bp])$', '_{0,\\\\mathrm{\\1}}') %>%
+    str_c('$\\', ., '$')
+}
+
+prior_summary %>% 
+  transmute(Parameter = format_params(stat),
+            Expected = mean,
+            `95\\% HPD Interval` = sprintf('%.0f--%.0f', low, high)) %>%
+  as.data.frame() %>%
+  knitr::kable(format='latex', escape=FALSE)
+
+@ 
+  \caption{Expected values and 95\% highest posterior density intervals for the
+    prior parameters, given the adaptation data.}
+  \label{tab:prior-params}
+\end{table}
+
+The second way to evaluate this model is based on the prior beliefs it infers
+listeners to have.  Table~\ref{tab:prior-params} shows the posterior expectation
+and 95\% highest posterior density intervals for each of the prior belief
+parameters given the adaptation data above.  The behavioral data was consistent
+with high confidence in prior beliefs with the prior confidence about category
+variances ($E(\nu_0) = \Sexpr{prior_expected['nu_0']}$) higher than confidence
+in the category means ($E(\kappa_0) = \Sexpr{prior_expected['kappa_0']}$).  Both
+of these (measured in pseudo-observations) are larger than the number of trials
+that listeners heard in the experiment (222), which means that as far as the
+belief-updating model is concerned, listeners updated beliefs reflected their
+prior belies as much as (in the case of the means) or more than (for the
+variances) the distributions they actually observed.  This is consistent with
+the qualitative finding that listeners' category boundaries are intermediate
+between the boundaires corresponding to a typical talker and the experimental
+exposure talker.
+
+Figure~\ref{fig:inferred-prior} shows the cue distributions corresponding to the
+posterior expected values of the prior expected mean and variance parameters
+given the behavioral data, compared with the distributions corresponding to a
+typical talker (as determined by a combination of classification and
+discrimination data, \citeNP{Kronrod2012}, see also \citeNP{Lisker1964}).  The
+inferred prior beliefs are in reasonably good agreement with this typical
+talker, with one excpetion: the mean for /b/ is slightly lower
+($E(\mu_{0,\mathrm{b}}) = \Sexpr{prior_expected['mu_0_b']}$ ms), and the standard
+deviation of /b/ is slightly higher ($E(\sigma_{0,\mathrm{b}}) =
+\Sexpr{prior_expected['sigma_0_b']}$ ms).
+
+\subsection{Discussion}
+\label{sec:discussion-1}
+
+These modeling results show that the pattern of adaptation behavior observed
+above is consistent with a belief-updating model of phonetic adaptation that
+combines prior expectations with input statistics in order to infer the current
+talker's cue distributions.  Specifically, it shows that there exists a single
+set of prior beliefs that captures the range of adaptation to different input
+distributions that stretches from nearly complete adaptation to partial
+adaptation at best.
+
+These prior beliefs are reasonably consistent with other attempts to determine
+what listeners think the underlying cue distributions are \cite{Kronrod2012}, as
+well as the distributions produced by actual talkers \cite{Lisker1964}.  In
+fact, the prior expected VOT distribution for /p/ that our model inferred is
+almost identical to that observed by both \citeA{Kronrod2012} and
+\cite{Lisker1964}.  The distribution for /b/ deviates from prior work,
+however. One possible reason for this is that a substantial minority of English
+speakers produce prevoiced /b/ \cite{Lisker1964,Docherty2011}, which is
+characterized by a lower (negative) VOT and a higher variance (often higher even
+than /p/).  That is, across talkers, the /b/ VOT distribution parameters (mean
+and variance) have a \emph{bimodal} distribution.  We assumed a single, unimodal
+prior distrbution, and the prior beliefs we inferred to be most likely are
+consistent with a compromise between the two types of /b/ distributions that
+talkers actually produce.  
+
+This is a possibility that requires further study. First, large-scale corpus
+studies of VOT distributions would be informative about the true underlying
+cross-talker variability in these distributions, but the only study of this type
+we are aware of considers only non-negative VOTs \cite{Chodroff2015} and cannot
+detect talkers who prevoice their /b/.  Second, more modeling work is needed to
+test whether a multimodal prior is justified given the adaptation data, and if
+so, whether it would change the inference about listeners' prior expectations
+for /b/.
+
+The other major result of this modeling is that listeners have high confidence
+in their prior expectations about the VOT distributions of /b/ and /p/, acting
+as if they had already observed around 200--800 samples (for the category means
+and variances, respectively) from the unfamiliar talker they encountered in our
+experiemnt.  This makes sense, given that there is not as much variability
+across talkers in VOT distributions \cite{Allen2003,Chodroff2015}.  As a result,
+past experience with other talkers' VOT distributions is, in principle, highly
+informative about the VOT distributions that an unfamiliar talker will produce,
+requiring less adaptation.  This leads naturally to the prediction that
+listeners will be less confident in their prior beliefs for cues and categories
+where there \emph{is} substantial variability across talkers, like spectral cues
+to fricatives \cite{McMurray2011a,Newman2001} or vowels
+\cite{Hillenbrand1995,Peterson1952}.
 
 
 \section{Conclusion}
