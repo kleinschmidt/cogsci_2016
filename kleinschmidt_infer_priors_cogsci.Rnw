@@ -39,9 +39,13 @@
 
 knitr::opts_chunk$set(echo=FALSE,
                       results='hide',
+                      cache=TRUE,
+                      autodep=TRUE,
                       message=FALSE,
                       warning=FALSE,
                       error=FALSE)
+
+options(scipen = 2, digits = 2)
 
 library(supunsup)
 
@@ -162,7 +166,7 @@ analysis.
 \end{figure}
 
 
-\begin{figure*}[]
+\begin{figure*}[htb]
 \centering
 
 <<input-vs-prior-stats, fig.width=8, fig.height=2, out.width="\\textwidth">>=
@@ -258,7 +262,7 @@ mod <- glmer(respP ~ vot_rel.s * trial.s + bvotCond + (1 | subject),
 
 @ 
 
-\begin{figure*}
+\begin{figure*}[htb]
   \centering
 
 <<class-curves, fig.height=2, fig.width=8, out.width="\\textwidth">>=
@@ -494,12 +498,13 @@ categories <-
   data_frame(cat_num = 1:2,
              category = c('b', 'p'))
 
+# helper function to melt a mult-dimensional array of samples into a df
 melt_samples <- function(samlpes, varname) {
   reshape2::melt(mod_samples[[varname]], value.name=varname) %>%
     tbl_df
 }
-  
 
+## create a data_frame with samples for prior parameters
 prior_samples_df <- 
   c('mu_0', 'sigma_0', 'kappa_0', 'nu_0') %>%
   map( ~ melt_samples(mod_samples, .x)) %>%
@@ -507,6 +512,7 @@ prior_samples_df <-
   tbl_df %>%
   left_join(categories)
 
+## create a data_frame with samples for updated parameters
 updated_samples_df <- 
   c('mu_n', 'sigma_n', 'kappa_n', 'nu_n') %>%
   map( ~ melt_samples(mod_samples, .x)) %>%
@@ -515,8 +521,10 @@ updated_samples_df <-
   left_join(categories) %>%
   left_join(subjects) %>%
   group_by(bvotCond) %>%
-  filter(subject == first(subject))     # just need one per condition
+  filter(subject == first(subject)) %>% # just need one per condition
+  select(-cat_num, -subject_num, -subject)
 
+## create a data_frame for lapsing rate samples
 lapse_rate_samples <- melt_samples(mod_samples, 'lapse_rate')
 
 @ 
