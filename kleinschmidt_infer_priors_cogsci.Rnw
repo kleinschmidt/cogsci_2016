@@ -249,7 +249,7 @@ defined the \emph{accent} that the subject heard, and each subject was
 pseudorandomly assigned to one of five accent conditions
 (Figure~\ref{fig:vot-dists}).
 
-\subsection{Results}
+\subsection{Results and Discussion}
 \label{sec:results}
 
 <<regression, eval=FALSE>>=
@@ -311,12 +311,6 @@ boundary_summary <- boundaries %>%
             shift_text = paste(median_shift_perc, '%', sep='')) %>%
   filter(bvotCond != 0)                 # basically no shift possible
 
-## bootstrapped boundary summary
-boundaries %>% 
-  group_by(bvotCond) %>% 
-  do(daver::boot_ci(., function(d,i) {mean(d$prop_shift[i])}))
-
-
 ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
   geom_line(aes(group=subject), stat='smooth', method='glm', 
             method.args=list(family='binomial'), alpha=0.2) +
@@ -348,7 +342,8 @@ ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
   compared with the classification functions expected based on a typical talker
   (no learning; dashed black lines) and complete adaptation to the exposure
   distributions (thick dashed colored lines). Listeners' actual category
-  boundaries lie between the typical talker and exposure talker boundaries.}
+  boundaries lie between the typical talker and exposure talker boundaries (see
+  Table~\ref{tab:boundary-shift}).}
 \label{fig:class-curves}
 \end{figure*}
 
@@ -382,16 +377,50 @@ ggplot(boundaries_by_third,
 
 @ 
 
+
+\begin{table}[htb]
+  \centering
+<<boundary-shift-table, results='asis'>>=
+
+## bootstrapped boundary summary
+boundaries %>% 
+  group_by(bvotCond) %>% 
+  do(daver::boot_ci(., function(d,i) {mean(d$prop_shift[i])})) %>%
+  mutate(observed = round(observed * 100),
+         ci_lo = round(ci_lo * 100),
+         ci_high = round(ci_high * 100)) %>%
+  ungroup() %>%
+  transmute(`/b/ mean VOT` = bvotCond,
+            `\\% boundary shift` = observed,
+            `95\\% CI (bootstrapped)` = sprintf('%d--%d', ci_lo, ci_high)) %>%
+  knitr::kable(format='latex', escape = FALSE)
+
+@ 
+\caption{Percentage of boundary shift from typical talker to each exposure
+  talker, averaged over subjects with 95\% bootstrapped confidence intervals
+  (compare with Figure~\ref{fig:class-curves}).  0\% shift corresponds to no
+  adaptation at all, while 100\% corresponds to perfect adaptation, ignoring any
+  prior beliefs.}
+  \label{tab:boundary-shift}
+\end{table}
+
 Figure~\ref{fig:class-curves} shows the classification functions for each
 individual listener. In each accent, these classification functions tend to fall
 in between the boundaries predicted by the typical talker distributions and the
-boundaries implied by the exposure distributions.  Moreover, in the
+boundaries implied by the exposure distributions.  We can quantify this by the
+percentage of the predicted shift in category boundary from the classification
+function for the typical talker to the boundary implied by the input
+distribution (Table~\ref{tab:boundary-shift}). A 0\% shift corresponds to no
+adaptation at all, while a shift of 100\% corresponds to complete adaptation to
+the exposure distributions, with no (remaining) influence of the typical talker.
 
-\subsection{Discussion}
-\label{sec:discussion}
-
-
-
+In all conditions, the average shift percentage was between 0\% and 100\%
+(except the 0ms shift condition, which is so close to the typical talker that
+estimating the percentage is numerically unstable). More interestingly, the more
+extreme conditions show less complete adaptation than the less extreme conditions.
+Together, these results suggest that listeners' adaptation was constrained by
+their prior expectations (given the finite amount of evidence they received
+about the unfamiliar talker).
 
 \section{Model}
 \label{sec:model}
@@ -812,6 +841,8 @@ substantial variability across talkers; \citeNP{McMurray2011a, Newman2001}).
 
 \section{Conclusion}
 \label{sec:conclusion}
+
+
 
 
 
