@@ -437,10 +437,14 @@ The posterior distributions of each of these parameters (the shared prior
 beliefs plus lapsing rate) were estimated using MCMC with the Stan software
 package \cite{Stan2015}.  Weakly informative hyperpriors were used that were
 centered at 0 with standard deviations of 100 for the prior expected means and
-variances (making them roughly constant over reasonable values) and four times
-the total number of observations for the prior confidence pseudocounts (covering
-the whole range from completely ignoring the prior to never adapting at
-all). The prior for the lapsing rate was uniform on $[0,1]$.  
+variances (making them roughly constant over reasonable values) and 888 (four
+times the total number of trials that listeners heard) for the prior confidence
+pseudocounts (covering the whole range from completely ignoring the prior to
+never adapting at all). The prior for the lapsing rate was uniform on $[0,1]$.
+We ran four chains for 1000 samples each, discarding the first 500 as burn-in
+for a total of 2000 samples overall. This sampler converged well and achieved
+good mixing (maximum Gelman-Rubin $\hat{R}= \Sexpr{round(max_Rhat, 3)}$;
+\citeNP{Gelman1992}).
 
 \subsection{Results}
 \label{sec:results-model}
