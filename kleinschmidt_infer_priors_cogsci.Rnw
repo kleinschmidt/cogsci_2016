@@ -352,6 +352,36 @@ ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
 \label{fig:class-curves}
 \end{figure*}
 
+
+<<shift-by-third, eval=FALSE>>=
+
+## Do boundary shift analysis by thirds
+boundaries_by_third <-
+  data %>%
+  mutate(thirds = ntile(trial, 3)) %>%
+  group_by(bvotCond, subject, thirds) %>%
+  do({ glm(respP ~ vot, family='binomial', data=.) %>%
+         broom::tidy() %>%
+         select(term, estimate)
+  }) %>%
+  ungroup() %>%
+  spread(term, estimate) %>%
+  mutate(boundary = -`(Intercept)` / vot,
+         ideal_boundary = as.numeric(as.character(bvotCond)) + 20,
+         prior_boundary = prior_bound,
+         prop_shift = (boundary-prior_boundary)/(ideal_boundary-prior_boundary)) %>%
+  group_by(bvotCond, thirds) %>% 
+  do(daver::boot_ci(., function(d,i) {mean(d$prop_shift[i])}))
+ 
+ggplot(boundaries_by_third, 
+       aes(x=thirds, y=observed, ymin=ci_lo, ymax=ci_high, 
+           color=bvotCond, fill=bvotCond)) + 
+  geom_ribbon(alpha=0.2, size=0) + 
+  geom_line() + 
+  facet_grid(.~bvotCond)
+
+@ 
+
 Figure~\ref{fig:class-curves} shows the classification functions for each
 individual listener. In each accent, these classification functions tend to fall
 in between the boundaries predicted by the typical talker distributions and the
