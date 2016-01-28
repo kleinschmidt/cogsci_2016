@@ -73,7 +73,7 @@ library(lme4)
 \label{sec:introduction}
 
 A longstanding problem in speech perception is how listeners manage to cope with
-substantial differences in how individual talkers produce speech.    Recent
+substantial differences in how individual talkers produce speech.  Recent
 evidence suggests that one strategy listeners employ is to \emph{rapidly adapt}
 to unfamiliar talkers \cite[among
 others]{Bertelson2003,Clarke2004,Kraljic2007,Norris2003}.
@@ -81,13 +81,14 @@ others]{Bertelson2003,Clarke2004,Kraljic2007,Norris2003}.
 statistical inference.  Each talker's particular accent (way of talking) can be
 formalized as the distribution of acoustic cues that they produce for each
 phonetic category (or other underlying linguistic unit).  When framed this way,
-listeners can adapt to an unfamiliar talker by inferring what those cue
-distributions look like, based on the cues that are actually produced by the talker.
+listeners can adapt to an unfamiliar talker via \emph{distributional learning},
+inferring the underlying cue distributions, based on the cues that are actually
+produced by the talker.
 
 One insight that this \emph{ideal adapter} framework provides is that rapid
-adaptation to an unfamiliar depends just as much on a listener's prior
+adaptation to an unfamiliar talker depends just as much on a listener's prior
 experience with other talkers as it does on the speech produced by the
-unfamiliar talker themself.  A listener's experience with others talkers
+unfamiliar talker themselves.  A listener's experience with others talkers
 provides the starting point for the distributional learning required for
 adaptation, or, in Bayesian terms, a \emph{prior distribution} over possible
 accents (cue distributions).  More informative prior beliefs can substantially
@@ -151,8 +152,10 @@ We recruited \Sexpr{n_total} subjects via Amazon's Mechanical Turk, who were
 paid \$2.00 for participation, which took about 20 minutes. We excluded subjects
 who participated more than once ($n=\Sexpr{n_subj_repeat}$) or whose accuracy at
 \ms{0} and \ms{70} VOT---as extrapolated via a logistic GLM---was less than 80\%
-correct ($n=\Sexpr{n_subj_bad}$; $n=\Sexpr{n_both}$ for both reasons). After
-these exclusions, data from \Sexpr{n_subj} subjects remained for analysis for
+correct ($n=\Sexpr{n_subj_bad}$; $n=\Sexpr{n_both}$ for both reasons). Excluded
+subjects were roughly equally distributed across conditions (maximum of 5 in 0ms
+/b/ VOT condition, and minimum of 1 in 20ms /b/ VOT condition). After these
+exclusions, data from \Sexpr{n_subj} subjects remained for analysis for
 analysis.
 
 \subsubsection{Procedure}
@@ -219,8 +222,8 @@ data %>%
   facet_grid(.~bvotCond) +
   scale_x_continuous('VOT (ms)') +
   scale_y_continuous('Frequency') +
-  scale_fill_discrete('/b/ mean\nVOT') +
-  theme(legend.position='none')
+  scale_fill_discrete('/b/ mean\nVOT') ## +
+  ## theme(legend.position='none')
 
 @ 
 
@@ -247,7 +250,12 @@ randomly drawn from a bimodal distribution, with low and high VOT clusters
 implicitly corresponding to /b/ and /p/, respectively.  This distribution
 defined the \emph{accent} that the subject heard, and each subject was
 pseudorandomly assigned to one of five accent conditions
-(Figure~\ref{fig:vot-dists}).
+(Figure~\ref{fig:vot-dists}).  Each of these accents implies a different /b/-/p/
+category boundary, and listeners' adaptation was evaluated by comparing their
+/b/-/p/ classification function (fitted by a logistic GLM) to the classification
+function derived from the typical talker's cue distributions (corresponding to
+no adaptation) and the exposure distribution (corresponding to maximal---but not
+necessarily optimal---adaptation).
 
 \subsection{Results and Discussion}
 \label{sec:results}
@@ -330,7 +338,7 @@ ggplot(data, aes(x=vot, y=respP, color=bvotCond)) +
             size = 3.5, hjust=1, vjust=1, color=hcl(15, c=100, l=65),
             lineheight=1) + 
   ## geom_text(data=boundary_summary, aes(x=75, y=0.1, label=shift_text), color='black') + 
-  theme(legend.position='none') +
+  ## theme(legend.position='none') +
   scale_x_continuous('VOT (ms)') +
   scale_y_continuous('Probability /p/ response') + 
   scale_color_discrete('/b/ mean\nVOT')
@@ -378,7 +386,7 @@ ggplot(boundaries_by_third,
 @ 
 
 
-\begin{table}[htb]
+\begin{table}[tb]
   \centering
 <<boundary-shift-table, results='asis'>>=
 
@@ -391,8 +399,8 @@ boundaries %>%
          ci_high = round(ci_high * 100)) %>%
   ungroup() %>%
   transmute(`/b/ mean VOT` = bvotCond,
-            `\\% boundary shift` = observed,
-            `95\\% CI (bootstrapped)` = sprintf('%d--%d', ci_lo, ci_high)) %>%
+            `Mean shift` = sprintf('%d\\%%', observed),
+            `95\\% CI` = sprintf('%d--%d\\%%', ci_lo, ci_high)) %>%
   knitr::kable(format='latex', escape = FALSE)
 
 @ 
@@ -452,7 +460,7 @@ model as the parameters of a two-component mixture of gaussians
               \sigma^2_\mathrm{p} \}
 \end{equation}
 where $\mu$ is a category's mean VOT and $\sigma^2$ is its variance.  As in
-\citeA{Kleinschmidt2015}, we use an independent, conjugate Normal-$\chi^2$ prior
+\citeA{Kleinschmidt2015}, we use an independent, conjugate Normal-$\chi^{-2}$ prior
 for each category, with parameters \cite{Gelman2003}
 \begin{eqnarray}
   \label{eq:2}
@@ -483,19 +491,19 @@ $x$) using Bayesian inference, marginalizing over $\theta$:
                            p(\phi)
 \end{eqnarray}
 
-We make the simplifying assumptions that the order of the trials does not matter
-(exchangeability), and that for the purposes of belief updating
-($p(\theta | x, \phi)$) the category labels that we, the experimenters, assigned
-to each cluster are known.  This is equivalent to assuming that listeners pick
-up on the cluster structure of the input they receive, accurately detecting the
-mean and variance of each cluster, and finding a compromise between these
-observed statistics and their prior beliefs, possibly revising earlier decisions
-they made about assigning stimuli to one category or the other.  Backing off
-this assumption is possible but computationally trickier, and we leave it as a
-question for future work.  It does not, as far as we can determine, bias our
-results one way or the other.  Finally, we also add a small lapsing rate
-parameter, that allows for some proportion of responses to be attributed to
-random guessing (see \citeNP{Clayards2008} for a discussion).
+We make the simplifying assumptions that the order of the trials does not
+matter, and that for the purposes of belief updating ($p(\theta | x, \phi)$) the
+category labels that we, the experimenters, assigned to each cluster are known.
+This is equivalent to assuming that listeners pick up on the cluster structure
+of the input they receive, accurately detecting the mean and variance of each
+cluster, and finding a compromise between these observed statistics and their
+prior beliefs, possibly revising earlier decisions they made about assigning
+stimuli to one category or the other.  Backing off this assumption is possible
+but computationally trickier, and we leave it as a question for future work.  It
+does not, as far as we can determine, bias our results one way or the other.
+Finally, we also add a small lapsing rate parameter, that allows for some
+proportion of responses to be attributed to random guessing (see
+\citeNP{Clayards2008} for a discussion).
 
 The posterior distributions of each of these parameters (the shared prior
 beliefs plus lapsing rate) were estimated using MCMC with the Stan software
@@ -724,7 +732,7 @@ prior_samples_df %>%
   \label{fig:inferred-prior}
 \end{figure}
 
-\begin{table}[htb]
+\begin{table}[tb]
   \centering
 <<inferred-prior-params, results='asis'>>=
 
