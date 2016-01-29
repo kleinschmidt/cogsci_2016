@@ -85,11 +85,12 @@ linguistic unit). Listeners are taken to adapt to an unfamiliar talker via
 \emph{distributional learning}, inferring the underlying talker-specific cue 
 distributions from the talker's productions.
 
-Critically, this statistical inference process is taken to draw on implicit 
+% TOOD: kind of liked the old version of this better. reconcile.
+Critically, this statistical inference process draws on implicit 
 beliefs about {\em how} talkers tend to differ from each other. As a 
-consequence, adaptation  to an unfamiliar talker should depend on a listener's 
+consequence, adaptation to an unfamiliar talker should depend on a listener's 
 prior experience with other talkers, rather than only on the speech 
-produced by the unfamiliar talker themselves. Specifically, a listener's experience with others 
+produced by the unfamiliar talker themselves. Specifically, a listener's experience with other 
 talkers provides the starting point for the distributional learning required for
 adaptation, or, in Bayesian terms, a \emph{prior belief} about the 
 probability of different possible accents (cue distributions). 
@@ -107,8 +108,8 @@ evidence that this is the case.  For instance, \citeA{Idemaru2011} found that
 listeners have difficulty adapting to a talker who produces anti-correlated
 distributions of two cues that are typically positively or un-correlated.
 \citeA{Sumner2011} found that listeners had trouble adapting to a talker who
-produced a distribution of cues for the /b/ and /p/ sounds that were
-substantially lower [TFJ:less variance? lower mean?] than a typical talker.  
+produced a distribution of cues for the /b/ and /p/ sounds that had
+substantially lower means than a typical talker.  
 
 However, no studies have systematically probed whether and how a listener's
 prior expectations constrain phonetic adaptation.  To that end, we expose listeners
@@ -136,7 +137,7 @@ we aim to shed light on the mechanisms and representations that afford robust
 speech perception despite inter-talker variability in the realization of phonetic
 categories. [TFJ: could be shortened; just trying to make the point] By aiming to
 infer these priors from {\em perception} data, we explore an approach that in the future 
-could avoids the need for costly and time-consuming annotation of production data from many
+could avoid the need for costly and time-consuming annotation of production data from many
 different talkers. This would provide a powerful method for investigating listeners'
 prior beliefs that could be applied to other cues, categories, and
 even social variables (like gender, native language background, etc.).
@@ -268,7 +269,7 @@ performed 222 of these trials.
 
 Each trial's word was synthesized with a voice onset time (VOT) that was
 randomly drawn from a bimodal distribution, with low and high VOT clusters
-implicitly corresponding to /b/ and /p/, respectively.  [TFJ: say that VOT is primary cue to /p/ vs. /b/ in english?]
+implicitly corresponding to /b/ and /p/, respectively.  %% [TFJ: say that VOT is primary cue to /p/ vs. /b/ in english?]
 This distribution
 defined the \emph{accent} that the subject heard, and each subject was
 pseudorandomly assigned to one of five accent conditions
@@ -278,10 +279,6 @@ category boundary, and listeners' adaptation was evaluated by comparing their
 function derived from the typical talker's cue distributions (corresponding to
 no adaptation) and the exposure distribution (corresponding to maximal---but not
 necessarily optimal---adaptation).
-
-[TFJ: the table is confusing. what does -28\% mean? especially since the -10ms condition then has a positive percentage. 
-It hink I know what you mean, but it's confusing. how about just writing "n.s." into that row? and then explaining in the 
-text?]
 
 \subsection{Results and Discussion}
 \label{sec:results}
@@ -425,8 +422,12 @@ boundaries %>%
          ci_high = round(ci_high * 100)) %>%
   ungroup() %>%
   transmute(`/b/ mean VOT` = bvotCond,
-            `Mean shift` = sprintf('%d\\%%', observed),
-            `95\\% CI` = sprintf('%d--%d\\%%', ci_lo, ci_high)) %>%
+            `Mean shift` = ifelse(bvotCond == 0,
+                                  '---',
+                                  sprintf('%d\\%%', observed)),
+            `95\\% CI` = ifelse(bvotCond == 0,
+                                '---',
+                                sprintf('%d--%d\\%%', ci_lo, ci_high))) %>%
   knitr::kable(format='latex', escape = FALSE)
 
 @ 
@@ -434,7 +435,8 @@ boundaries %>%
   talker, averaged over subjects with 95\% bootstrapped confidence intervals
   (compare with Figure~\ref{fig:class-curves}).  0\% shift corresponds to no
   adaptation at all, while 100\% corresponds to perfect adaptation, ignoring any
-  prior beliefs.}
+  prior beliefs. Typical and exposure talker boundaries were too close together to
+  reliably determine boundary shift percentage in the 0ms condition.}
   \label{tab:boundary-shift}
 \end{table}
 
@@ -459,20 +461,20 @@ combine their prior expectations with observed cue distributions in order to
 rapidly adapt to unfamiliar talkers, as predicted by the ideal adapter framework
 \cite{Kleinschmidt2015}.
 
-\section{Model}[TFJ: how about ``Inferring priors about inter-talker variability'' or something like that?]
+\section{Inferring prior beliefs from adpatation} %% [TFJ: how about ``Inferring priors about inter-talker variability'' or something like that?]
 \label{sec:model}
 
 Our second goal in this paper is to test whether it is possible to infer
-listeners prior beliefs 
-[TFJ: here and elsewhere: I think it's important to be clear what type of prior beliefs you mean; hence 
-also my edits in the intro; there and in the discussion, I think it's particularly important to be clear that you're not just
-inferring talker-marginalized category-specific cue distributions] 
+listeners' prior beliefs 
+%% [TFJ: here and elsewhere: I think it's important to be clear what type of prior beliefs you mean; hence 
+%% also my edits in the intro; there and in the discussion, I think it's particularly important to be clear that you're not just
+%% inferring talker-marginalized category-specific cue distributions] 
 based on their patterns of adaptation to different
 accents. To that end, we use a variant of a Bayesian belief-updating model that
 has previously provided a good account of how listeners incrementally update
 their beliefs in order to rapidly adapt to an unfamiliar talker
-\cite{Kleinschmidt2012c}. Previous modeling
-work along these lines [TFJ: REF] has treated the content of listeners prior beliefs---the
+\cite{Kleinschmidt2015}. This previous modeling
+work has treated the content of listeners prior beliefs---the
 category means and variances they think are most likely---as known and fixed,
 setting them based on pre-adaptation classification data, and then fitting the
 confidence in those prior beliefs as a free parameter. Here, we wish to fit both
@@ -526,7 +528,7 @@ matter for the current purpose, and that %for the purposes of belief updating ($
 the category labels that we, the experimenters, assigned to each cluster are known.
 This is equivalent to assuming that listeners pick up on the cluster structure
 of the input they receive, accurately detecting the mean and variance of each
-cluster, and finding a compromise between these observed statistics and their
+cluster, and find a compromise between these observed statistics and their
 prior beliefs, possibly revising earlier decisions they made about assigning
 stimuli to one category or the other.  Backing off this assumption is possible
 but computationally more demanding, and we leave it as a question for future work. 
@@ -534,24 +536,6 @@ This simplifying assumption does not, as far as we can determine, bias our resul
 Finally, we also add a small lapse rate parameter, that allows for some
 proportion of responses to be attributed to random guessing (e.g., because of 
 attentional blinks, see \citeNP{Clayards2008} for a discussion).
-
-The posterior distributions of each of these parameters (the shared prior
-beliefs plus lapsing rate) were estimated using MCMC with the Stan software
-package \cite{Stan2015}.  Weakly informative hyperpriors were used that were
-centered at 0 with standard deviations of 100 for the prior expected means and
-variances (making them roughly constant over reasonable values) and 888 (four
-times the total number of trials that listeners heard) for the prior confidence
-pseudocounts (covering the whole range from completely ignoring the prior to
-never adapting at all). [TFJ: can you be clearer here: 888 prior pseudocounts would seem to 
-large preempt adaptation]
-The prior for the lapsing rate was uniform on $[0,1]$.
-We ran four chains for 1000 samples each, discarding the first 500 as burn-in
-for a total of 2000 samples overall. This sampler converged well and achieved
-good mixing (maximum Gelman-Rubin $\hat{R}= \Sexpr{round(max_Rhat, 3)}$;
-\citeNP{Gelman1992}).
-
-\subsection{Results}
-\label{sec:results-model}
 
 <<run-model>>=
 
@@ -637,14 +621,35 @@ lapse_rate_samples <- melt_samples(mod_samples, 'lapse_rate')
 
 @ 
 
+The posterior distributions of each of these parameters (the shared prior
+beliefs plus lapsing rate) were estimated using MCMC with the Stan software
+package \cite{Stan2015}.  Weakly informative hyperpriors were used that were
+centered at 0 with standard deviations of 100 for the prior expected means and
+variances (making them roughly constant over reasonable values) and 888 (four
+times the total number of trials that listeners heard) for the prior confidence
+pseudocounts (which is essentialy uniform on the whole range from completely ignoring prior beliefs to
+not adapting at all).
+The prior for the lapsing rate was uniform on $[0,1]$.
+We ran four chains for 1000 samples each, discarding the first 500 as burn-in
+for a total of 2000 samples overall. This sampler converged well and achieved
+good mixing (maximum Gelman-Rubin $\hat{R}= \Sexpr{round(max_Rhat, 3)}$;
+\citeNP{Gelman1992}).
+
+\subsection{Results}
+\label{sec:results-model}
+
+
 <<model-goodness-of-fit>>=
 
-mod_goodness_of_fit <- 
+mod_fitted <- 
   data.frame(data_stan_conj$z_test_counts) %>%
   tbl_df() %>%
   mutate(prob_p = apply(mod_samples$p_test_conj[, , 2], 2, mean),
-         prob_p_lapse = prob_p * (1-lapse_rate) + lapse_rate/2,
-         LL_mod = dbinom(x = p, size = b+p, prob = prob_p_lapse, log = TRUE),
+         prob_p_lapse = prob_p * (1-lapse_rate) + lapse_rate/2)
+
+mod_goodness_of_fit <- 
+  mod_fitted %>%
+  mutate(LL_mod = dbinom(x = p, size = b+p, prob = prob_p_lapse, log = TRUE),
          LL_null = dbinom(x = p, size = b+p, prob = mean(p/(b+p)), log = TRUE)) %>%
   summarise(LL_mod = sum(LL_mod),
             LL_null = sum(LL_null),
@@ -715,16 +720,14 @@ behavior. Figure~\ref{fig:model-fit-classifications} shows listeners' average
 classification functions, compared with the posterior predictive classification
 functions from the belief-updating model.  The first thing to notice is that the
 model fits the data well (log-likelihood ratio vs. an intercept-only binomial
-null model of \Sexpr{round(mod_goodness_of_fit[['LL_ratio']])}, [TFJ: p less than 0.001, I assume based on model comparison; also provide p-value for correlation]
+null model of \Sexpr{round(mod_goodness_of_fit[['LL_ratio']])},
 and Spearman's
-$\rho$ = \Sexpr{mod_goodness_of_fit[['rho']]}) capturing the different
+$\rho$ = \Sexpr{mod_goodness_of_fit[['rho']]}, $p<10^{-10}$ in both cases) capturing the different
 classification functions that result from exposure to each input distribution.
 This in and of itself is an interesting result: it shows that there does exist
 some set of prior beliefs such that the range of adaptation behavior we observed
 can be explained by a model where the listeners assigned to the different accent conditions 
 all start from a common set of prior beliefs. 
-[TFJ: wait, doesn't it just mean that the mean across subjects is reasonably well modeled this way? 
-I then realized what you meant and edited this a bit]
 
 \begin{figure}[htb]
   \centering
@@ -842,14 +845,13 @@ than /p/).  That is, across talkers, the /b/ VOT distribution parameters (mean
 and variance) have a \emph{bimodal} distribution.  We assumed a single, unimodal
 prior distribution, and the prior beliefs we inferred to be most likely are
 consistent with a compromise between the two types of /b/ distributions that
-talkers actually produce.  
-
-[TFJ: ok, but why did previous works not come to the same conclusion? in particular
-kronrod? I think you need to say something about that.]
+talkers actually produce.
+%% [TFJ: ok, but why did previous works not come to the same conclusion? in particular
+%% kronrod? I think you need to say something about that.]
 
 This possibility suggests two directions for future work. First, large-scale
-corpus studies of VOT distributions would be informative about the true
-underlying cross-talker variability in these distributions [TFJ: be more specific?], but the only study
+corpus studies of VOT distributions are needed to determine to what extent the distribution of /b/ mean VOTs is really bimodal across talkers.  However, 
+the only study
 of this type we are aware of considers only non-negative VOTs
 \cite{Chodroff2015} and thus excludes talkers who pre-voice their /b/.  Second,
 more modeling work is needed to test whether a multimodal prior is justified
@@ -876,7 +878,7 @@ variability across talkers, listeners need to rely more on the current talker's
 cue distributions and less on their prior experience.  Thus, the apparent
 discrepancy between the confidence that listeners place in their prior beliefs
 in the current study and in \citeA{Kleinschmidt2015} is actually in line with
-an ``ideal adapter'' which combines prior beliefs with current experience
+an \emph{ideal adapter} which combines prior beliefs with current experience
 weighted according to confidence.  This idea finds
 further empirical support in \citeA{Kraljic2007}, who found that after the same
 amount of exposure, listeners recalibrate a /d/-/t/ contrast (analogous to the
@@ -893,7 +895,7 @@ paper, we have shown first that for a range of different accents (cue
 distributions), listeners' behavior in a distributional learning experiment
 reflects a compromise between what would be expected for the cue distributions
 produced by a typical talker and the exposure talker.  Second, 
-the range of adaptation behavior observed across the various accents listeners
+the range of adaptation behavior observed across the various accents that listeners
 heard can be captured by a belief-updating model with a single set of 
 prior expectations that are updated based on
 experience with the exposure talker. 
@@ -919,8 +921,6 @@ role in a number of perceptual and memory domains
 learning provides an approach to probing prior expectations about the
 \emph{statistics} of the sensory world, which, as in speech perception, are
 critical to effectively coping with non-stationarity in sensory statistics.
-
-[TFJ: nice. a bit rough around the edges. you probably can cut some refs, too; but mostly I think it can be submitted as is]
 
 \bibliographystyle{apacite}
 
