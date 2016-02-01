@@ -91,54 +91,52 @@ A longstanding problem in speech perception is how listeners manage to cope with
 substantial differences in how individual talkers produce speech.  Recent
 evidence suggests that one strategy listeners employ is to \emph{rapidly adapt}
 to unfamiliar talkers \cite[among
-others]{Bertelson2003,Clarke2004,Kraljic2007,Norris2003}.
-Such adaptation can be understood as a form of statistical inference. This insight
-is captured by a recent proposal, the {\em ideal adapter} framework \cite{Kleinschmidt2015}. 
-Each talker's particular accent (way of talking) can be formalized as the distribution of
-acoustic cues that they produce for each phonetic category (or other underlying 
-linguistic unit). Listeners are taken to adapt to an unfamiliar talker via 
-\emph{distributional learning}, inferring the underlying talker-specific cue 
-distributions from the talker's productions.
+others]{Bertelson2003,Clarke2004,Kraljic2007}.  Such adaptation can
+be understood as a form of statistical inference. This insight is captured by a
+recent proposal, the {\em ideal adapter} framework \cite{Kleinschmidt2015}.
+Each talker's particular accent (way of talking) can be formalized as the
+distribution of acoustic cues that they produce for each phonetic category (or
+other underlying linguistic unit). Listeners are taken to adapt to an unfamiliar
+talker via \emph{distributional learning}, inferring the underlying
+talker-specific cue distributions from the talker's productions.
 
-% TOOD: kind of liked the old version of this better. reconcile.
-Critically, this statistical inference process draws on implicit 
-beliefs about {\em how} talkers tend to differ from each other. As a 
-consequence, adaptation to an unfamiliar talker should depend on a listener's 
-prior experience with other talkers, rather than only on the speech 
-produced by the unfamiliar talker themselves. Specifically, a listener's experience with other 
-talkers provides the starting point for the distributional learning required for
-adaptation, or, in Bayesian terms, a \emph{prior belief} about the 
-probability of different possible accents (cue distributions). 
-More informative prior beliefs can substantially reduce the amount of direct evidence 
-needed to converge on accurate beliefs about the current talker's cue distributions.
+Critically, this statistical inference process draws on implicit beliefs about
+{\em how} talkers tend to differ from each other. As a consequence, adaptation
+to an unfamiliar talker should depend on a listener's prior experience with
+other talkers, rather than only on the speech produced by the unfamiliar talker
+themselves. Specifically, a listener's experience with other talkers provides
+the starting point for the distributional learning required for adaptation, or,
+in Bayesian terms, a \emph{prior belief} about the probability of different
+possible accents (cue distributions).  More informative prior beliefs can
+substantially reduce the amount of direct evidence needed to converge on
+accurate beliefs about the current talker's cue distributions.
 
-The goals of the present work are two-fold. First, we test a critical prediction of 
-the ideal adapter framework.  To the extent
-that a listener's prior beliefs are informative, they must take some probability
-\emph{away} from unlikely accents.  Confronted by a talker whose accent falls
-well outside the range of what they expect based on their previous experience,
-the ideal adapter framework predicts that a listener will require more evidence
-to adapt, leading to slowed or incomplete adaptation.  There is some 
-evidence that this is the case.  For instance, \citeA{Idemaru2011} found that
-listeners have difficulty adapting to a talker who produces anti-correlated
-distributions of two cues that are typically positively or un-correlated.
-\citeA{Sumner2011} found that listeners had trouble adapting to a talker who
-produced a distribution of cues for the /b/ and /p/ sounds that had
-substantially lower means than a typical talker.  
+The goals of the present work are two-fold. First, we test a critical prediction
+of the ideal adapter framework.  To the extent that a listener's prior beliefs
+are informative, they must take some probability \emph{away} from unlikely
+accents.  Confronted by a talker whose accent falls well outside the range of
+what they expect based on their previous experience, the ideal adapter framework
+predicts that a listener will require more evidence to adapt, leading to slowed
+or incomplete adaptation.  There is some evidence that this is the case.  For
+instance, \citeA{Idemaru2011} found that listeners have difficulty adapting to a
+talker who produces anti-correlated distributions of two cues that are typically
+positively or un-correlated.  \citeA{Sumner2011} found that listeners had
+trouble adapting to a talker who produced a distribution of cues for the /b/ and
+/p/ sounds that had substantially lower means than a typical talker.
 
 However, no studies have systematically probed whether and how a listener's
 prior expectations constrain phonetic adaptation, or even what kind of prior
-beliefs listeners have.  To that end, we expose listeners
-to a range of different accents, which differ (only) in the cue distributions for /b/
-and /p/.  By parametrically manipulating these distributions, we create a range
-of accents that are more or less similar to what a typical talker of English
-produces. We then assess the degree to which listeners adapt their beliefs about
-the novel talker's cue distributions, depending on the {\em a priori} typicality 
-of these distributions.
+beliefs listeners have.  To that end, we expose listeners to a range of
+different accents, which differ (only) in the cue distributions for /b/ and /p/.
+By parametrically manipulating these distributions, we create a range of accents
+that are more or less similar to what a typical talker of English produces. We
+then assess the degree to which listeners adapt their beliefs about the novel
+talker's cue distributions, depending on the {\em a priori} typicality of these
+distributions.
 
 To anticipate the results, we find that typicality of the novel talker's cue
 distribution predicts the degree to which listeners adapt to the talker. This
-suggests that listeners not only have beliefs about the cue distrbutions for a
+suggests that listeners not only have beliefs about the cue distributions for a
 \emph{particular} single talker (as suggested by previous work;
 \citeNP{Clayards2008, Feldman2009, Kleinschmidt2015, Kronrod2012}), but also
 have implicit beliefs about the ways in which talkers tend to \emph{differ} from
@@ -167,6 +165,12 @@ even social variables (like gender, native language background, etc.).
 prior_stats <- data.frame(category=factor(c('b', 'p')),
                           mean = c(0, 60),
                           sd = sqrt(c(14, 254)))
+
+## prior parameters from Chodroff et al. ICPhS 2015
+## prior_stats <- data.frame(category=factor(c('b', 'p')),
+##                           mean = c(9, 51),
+##                           sd = c(5, 21))
+
 
 exposure_stats <- data %>%
   group_by(bvotCond, category=trueCat) %>%
@@ -287,8 +291,7 @@ whether they heard the /b/ or /p/ member of the minimal pair
 
 Each trial's word was synthesized with a voice onset time (VOT) that was
 randomly drawn from a bimodal distribution, with low and high VOT clusters
-implicitly corresponding to /b/ and /p/, respectively.  %% [TFJ: say that VOT is primary cue to /p/ vs. /b/ in english?]
-This distribution
+implicitly corresponding to /b/ and /p/, respectively.  This distribution
 defined the \emph{accent} that the subject heard, and each subject was
 pseudorandomly assigned to one of five accent conditions
 (Figure~\ref{fig:vot-dists}).  Each of these accents implies a different /b/-/p/
@@ -645,13 +648,12 @@ package \cite{Stan2015}.  Weakly informative hyperpriors were used that were
 centered at 0 with standard deviations of 100 for the prior expected means and
 variances (making them roughly constant over reasonable values) and 888 (four
 times the total number of trials that listeners heard) for the prior confidence
-pseudocounts (which is essentialy uniform on the whole range from completely ignoring prior beliefs to
-not adapting at all).
-The prior for the lapsing rate was uniform on $[0,1]$.
-We ran four chains for 1000 samples each, discarding the first 500 as burn-in
-for a total of 2000 samples overall. This sampler converged well and achieved
-good mixing (maximum Gelman-Rubin $\hat{R}= \Sexpr{round(max_Rhat, 3)}$;
-\citeNP{Gelman1992}).
+pseudocounts (which is essentially uniform on the whole range from completely
+ignoring prior beliefs to not adapting at all).  The prior for the lapsing rate
+was uniform on $[0,1]$.  We ran four chains for 1000 samples each, discarding
+the first 500 as burn-in for a total of 2000 samples overall. This sampler
+converged well and achieved good mixing (maximum Gelman-Rubin
+$\hat{R}= \Sexpr{round(max_Rhat, 3)}$; \citeNP{Gelman1992}).
 
 \subsection{Results}
 \label{sec:results-model}
@@ -834,14 +836,14 @@ exposure talker.
 
 Figure~\ref{fig:inferred-prior} shows the cue distributions corresponding to the
 posterior expected values of the prior expected mean and variance parameters
-given the behavioral data, compared with the distributions corresponding to a
+given the behavioral data, compared with the distributions corresponding to one
 typical talker (as determined by a combination of classification and
 discrimination data, \citeNP{Kronrod2012}, see also \citeNP{Lisker1964}).  The
 inferred prior beliefs are in reasonably good agreement with this typical
 talker, with one exception: the mean for /b/ is slightly lower
-($E(\mu_{0,\mathrm{b}}) = \Sexpr{prior_expected['mu_0_b']}$ ms), and the standard
-deviation of /b/ is slightly higher ($E(\sigma_{0,\mathrm{b}}) =
-\Sexpr{prior_expected['sigma_0_b']}$ ms).
+($E(\mu_{0,\mathrm{b}}) = \Sexpr{prior_expected['mu_0_b']}$ ms), and the
+standard deviation of /b/ is slightly higher
+($E(\sigma_{0,\mathrm{b}}) = \Sexpr{prior_expected['sigma_0_b']}$ ms).
 
 \subsection{Discussion}
 \label{sec:discussion-1}
@@ -861,7 +863,7 @@ fact, the prior expected VOT distribution for /p/ that our model inferred is
 almost identical to that observed by both \citeA{Kronrod2012} and
 \citeA{Lisker1964}.  The distribution for /b/ deviates from prior work,
 however. One possible reason for this is that a substantial minority of English
-speakers produce pre-voiced /b/ \cite{Lisker1964,Docherty2011}, which is
+speakers produce pre-voiced /b/ \cite{Lisker1964}, which is
 characterized by a lower (negative) VOT and a higher variance (often higher even
 than /p/).  That is, across talkers, the /b/ VOT distribution parameters (mean
 and variance) have a \emph{bimodal} distribution.  We assumed a single, unimodal
@@ -886,26 +888,26 @@ as if they had already observed around 200--800 samples from each category (for
 the category means and variances, respectively) from the unfamiliar talker they
 encountered in our experiment.  
 
-At first blush, this conflicts with previous 
-work on another phonetic contrast, /b/-/d/, which found confidence values that 
-were one or two orders of magnitude smaller than those inferred here \cite{Kleinschmidt2015}. 
-Interestingly, the /b/-/d/ contrast is cued by spectral cues (formant frequency transitions) which generally vary
-substantially across talkers \cite<e.g.,>{Peterson1952}.  The
+At first blush, this conflicts with previous work on another phonetic contrast,
+/b/-/d/, which found confidence values that were one or two orders of magnitude
+smaller than those inferred here \cite{Kleinschmidt2015}.  Interestingly, the
+/b/-/d/ contrast is cued by spectral cues (formant frequency transitions) which
+generally vary substantially across talkers \cite<e.g.,>{Peterson1952}.  The
 acoustic cues to the /b/-/p/ contrast used in the current study do not show as
-much variability across talkers \cite<e.g.,>{Allen2003, Chodroff2015}.  When there is
-little variability across talkers, past experience with other talkers' VOT
-distributions is highly informative about the distributions that an unfamiliar
-talker will produce, requiring less adaptation.  Likewise, when there is more
-variability across talkers, listeners need to rely more on the current talker's
-cue distributions and less on their prior experience.  Thus, the apparent
-discrepancy between the confidence that listeners place in their prior beliefs
-in the current study and in \citeA{Kleinschmidt2015} is actually in line with
-an \emph{ideal adapter} which combines prior beliefs with current experience
-weighted according to confidence.  This idea finds
-further empirical support in \citeA{Kraljic2007}, who found that after the same
-amount of exposure, listeners recalibrate a /d/-/t/ contrast (analogous to the
-/b/-/p/ contrast used here) much less than an /s/-\ph S contrast (where the latter exhibits larger
- variability across talkers; e.g., \citeNP{Newman2001}).
+much variability across talkers \cite<e.g.,>{Allen2003, Chodroff2015}.  When
+there is little variability across talkers, past experience with other talkers'
+VOT distributions is highly informative about the distributions that an
+unfamiliar talker will produce, requiring less adaptation.  Likewise, when there
+is more variability across talkers, listeners need to rely more on the current
+talker's cue distributions and less on their prior experience.  Thus, the
+apparent discrepancy between the confidence that listeners place in their prior
+beliefs in the current study and in \citeA{Kleinschmidt2015} is actually in line
+with an \emph{ideal adapter} which combines prior beliefs with current
+experience weighted according to confidence.  This idea finds further empirical
+support in \citeA{Kraljic2007}, who found that after the same amount of
+exposure, listeners recalibrate a /d/-/t/ contrast (analogous to the /b/-/p/
+contrast used here) much less than an /s/-\ph S contrast (where the latter
+exhibits larger variability across talkers; e.g., \citeNP{Newman2001}).
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -916,33 +918,31 @@ observed evidence about that particular talker's cue distributions.  In this
 paper, we have shown first that for a range of different accents (cue
 distributions), listeners' behavior in a distributional learning experiment
 reflects a compromise between what would be expected for the cue distributions
-produced by a typical talker and the exposure talker.  Second, 
-the range of adaptation behavior observed across the various accents that listeners
-heard can be captured by a belief-updating model with a single set of 
-prior expectations that are updated based on
-experience with the exposure talker. 
+produced by a typical talker and the exposure talker.  Second, the range of
+adaptation behavior observed across the various accents that listeners heard can
+be captured by a belief-updating model with a single set of prior expectations
+that are updated based on experience with the exposure talker.
 
 These results emphasize the importance of listeners' prior expectations for
 robust speech perception in the face of talker variability.  Even if all the
 listener knows about the talker is that they are speaking English, they can
 still benefit from prior experience with other speakers of English to provide an
-informative head start for adaptation.
-The modeling framework we use has the additional advantage of allowing us to
-\emph{infer} what cue distributions listeners believe an unfamiliar talker will
-produce. This provides a potentially powerful---and heretofore missing---tool
-for probing listeners' prior expectations, based only on comprehension
-data. These beliefs reflect what listeners have learned about the variability
-they can expect across talkers, and probing how this internal model is
-related to the \emph{actual} variability across talkers (measured via speech
-production data) is an important next step in advancing our understanding of
-robust speech perception.  
+informative head start for adaptation.  The modeling framework we use has the
+additional advantage of allowing us to \emph{infer} what cue distributions
+listeners believe an unfamiliar talker will produce. This provides a potentially
+powerful---and heretofore missing---tool for probing listeners' prior
+expectations, based only on comprehension data. These beliefs reflect what
+listeners have learned about the variability they can expect across talkers, and
+probing how this internal model is related to the \emph{actual} variability
+across talkers (measured via speech production data) is an important next step
+in advancing our understanding of robust speech perception.
 
 More generally, prior knowledge is increasingly understood to play in important
 role in a number of perceptual and memory domains
-\cite<e.g.,>{Brady2013,Froyen2015a,Orhan2011}.  Distributional
-learning provides an approach to probing prior expectations about the
-\emph{statistics} of the sensory world, which, as in speech perception, are
-critical to effectively coping with non-stationarity in sensory statistics.
+\cite<e.g.,>{Brady2013,Froyen2015a,Orhan2011}.  Distributional learning provides
+an approach to probing prior expectations about the \emph{statistics} of the
+sensory world, which, as in speech perception, are critical to effectively
+coping with non-stationarity in sensory statistics.
 
 \section{Acknowledgements}
 \label{sec:acknowledgements}
