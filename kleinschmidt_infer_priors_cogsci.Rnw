@@ -156,55 +156,7 @@ even social variables (like gender, native language background, etc.).
 \section{Experiment}
 \label{sec:experiment}
 
-\subsection{Methods}
-\label{sec:methods}
-
-\subsubsection{Subjects}
-\label{sec:subjects}
-
-<<participants>>=
-n_subj <- data %>% group_by(subject) %>% summarise() %>% tally()
-
-excluded <- supunsup::supunsup_excluded %>%
-  filter(supCond == 'unsupervised') %>%
-  group_by(subject) %>% 
-  summarise() %>% 
-  right_join(supunsup::excludes) %>%
-  select(subject, exclude80PercentAcc, rank)
-
-n_excluded <- nrow(excluded)
-n_subj_repeat <- sum(!is.na(excluded$rank))
-n_subj_bad <- sum(!is.na(excluded$exclude80PercentAcc))
-n_both <- n_subj_repeat + n_subj_bad - n_excluded 
-
-n_total <- n_subj + n_excluded
-
-@ 
-
-We recruited \Sexpr{n_total} subjects via Amazon's Mechanical Turk, who were
-paid \$2.00 for participation, which took about 20 minutes. We excluded subjects
-who participated more than once ($n=\Sexpr{n_subj_repeat}$) or whose accuracy at
-\ms{0} and \ms{70} VOT---as extrapolated via a logistic GLM---was less than 80\%
-correct ($n=\Sexpr{n_subj_bad}$; $n=\Sexpr{n_both}$ for both reasons). Excluded
-subjects were roughly equally distributed across conditions (maximum of 5 in 0ms
-/b/ VOT condition, and minimum of 1 in 20ms /b/ VOT condition). After these
-exclusions, data from \Sexpr{n_subj} subjects remained for analysis for
-analysis.
-
-\subsubsection{Procedure}
-\label{sec:procedure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figure_manual/beach_peach.png}
-  \caption{Example trial display (beach/peach). Listeners first click on the
-    green button to play the word, then click on one picture to indicate what
-    they heard.}
-  \label{fig:beach-peach}
-\end{figure}
-
-
-\begin{figure*}[htb]
+\begin{figure*}[!htb]
 \centering
 
 <<input-vs-prior-stats, fig.width=8, fig.height=2, out.width="\\textwidth">>=
@@ -270,13 +222,68 @@ data %>%
 
 \end{figure*}
 
+We tested the role that listeners prior expectations play in adapting to an
+unfamiliar talker by exposing them to one of five synthetic ``accents''
+(Figure~\ref{fig:vot-dists}). These accents differed only in the distribution of
+voice onset time (VOT), the primary cue to word-initial stop consonant voicing
+in English (e.g., ``beach'' vs. ``peach''). Learning was assessed based on
+listeners' classification function, or how they labeled each VOT as /b/ or /p/.
+
+\subsection{Methods}
+\label{sec:methods}
+
+\subsubsection{Subjects}
+\label{sec:subjects}
+
+<<participants>>=
+n_subj <- data %>% group_by(subject) %>% summarise() %>% tally()
+
+excluded <- supunsup::supunsup_excluded %>%
+  filter(supCond == 'unsupervised') %>%
+  group_by(subject) %>% 
+  summarise() %>% 
+  right_join(supunsup::excludes) %>%
+  select(subject, exclude80PercentAcc, rank)
+
+n_excluded <- nrow(excluded)
+n_subj_repeat <- sum(!is.na(excluded$rank))
+n_subj_bad <- sum(!is.na(excluded$exclude80PercentAcc))
+n_both <- n_subj_repeat + n_subj_bad - n_excluded 
+
+n_total <- n_subj + n_excluded
+
+@ 
+
+We recruited \Sexpr{n_total} subjects via Amazon's Mechanical Turk, who were
+paid \$2.00 for participation, which took about 20 minutes. We excluded subjects
+who participated more than once ($n=\Sexpr{n_subj_repeat}$) or whose accuracy at
+\ms{0} and \ms{70} VOT---as extrapolated via a logistic GLM---was less than 80\%
+correct ($n=\Sexpr{n_subj_bad}$; $n=\Sexpr{n_both}$ for both reasons). Excluded
+subjects were roughly equally distributed across conditions (maximum of 5 in 0ms
+/b/ VOT condition, and minimum of 1 in 20ms /b/ VOT condition). After these
+exclusions, data from \Sexpr{n_subj} subjects remained for analysis for
+analysis.
+
+\subsubsection{Procedure}
+\label{sec:procedure}
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\columnwidth]{figure_manual/beach_peach.png}
+  \caption{Example trial display (beach/peach). Listeners first click on the
+    green button to play the word, then click on one picture to indicate what
+    they heard.}
+  \label{fig:beach-peach}
+\end{figure}
+
+
 Our distributional learning procedure is described in \citeA{Kleinschmidt2015a},
 and is based on \citeA{Clayards2008}. On each trial, two response option images
 appeared, which corresponded to one of three /b/-/p/ minimal pairs (beach/peach,
 bees/peas, or beak/peak). Subjects then clicked on a central button which played
 the corresponding minimal pair word, and then clicked on the picture to indicate
-whether they heard the /b/ or /p/ member of the minimal pair.  Subjects
-performed 222 of these trials.
+whether they heard the /b/ or /p/ member of the minimal pair
+(Figure~\ref{fig:beach-peach}).  Subjects performed 222 of these trials.
 
 Each trial's word was synthesized with a voice onset time (VOT) that was
 randomly drawn from a bimodal distribution, with low and high VOT clusters
@@ -419,6 +426,26 @@ ggplot(boundaries_by_third,
 
 @ 
 
+Figure~\ref{fig:class-curves} shows the classification functions for each
+individual listener. In each accent, these classification functions tend to fall
+in between the boundaries predicted by the typical talker distributions and the
+boundaries implied by the exposure distributions.  We can quantify this by the
+percentage of the predicted shift in category boundary from the classification
+function for the typical talker to the boundary implied by the input
+distribution (Table~\ref{tab:boundary-shift}). A 0\% shift corresponds to no
+adaptation at all, while a shift of 100\% corresponds to complete adaptation to
+the exposure distributions, with no (remaining) influence of the typical talker.
+
+In all conditions, the average shift percentage was between 0\% and 100\%
+(except the 0ms shift condition, which is so close to the typical talker that
+estimating the percentage is numerically unstable). More interestingly, the more
+extreme conditions show less complete adaptation than the less extreme conditions.
+Together, these results suggest that listeners' adaptation was constrained by
+their prior expectations (given the finite amount of evidence they received
+about the unfamiliar talker).  This provides qualitative evidence that listeners
+combine their prior expectations with observed cue distributions in order to
+rapidly adapt to unfamiliar talkers, as predicted by the ideal adapter framework
+\cite{Kleinschmidt2015}.
 
 \begin{table}[tb]
   \centering
@@ -443,34 +470,14 @@ boundaries %>%
 
 @ 
 \caption{Percentage of boundary shift from typical talker to each exposure
-  talker, averaged over subjects with 95\% bootstrapped confidence intervals
-  (compare with Figure~\ref{fig:class-curves}).  0\% shift corresponds to no
-  adaptation at all, while 100\% corresponds to perfect adaptation, ignoring any
-  prior beliefs. Typical and exposure talker boundaries were too close together to
+  talker (see Figure~\ref{fig:class-curves}), averaged over subjects with 95\%
+  bootstrapped confidence intervals.  0\% shift corresponds to no adaptation at
+  all, while 100\% corresponds to perfect adaptation, ignoring any prior
+  beliefs. Typical and exposure talker boundaries were too close together to
   reliably determine boundary shift percentage in the 0ms condition.}
   \label{tab:boundary-shift}
 \end{table}
 
-Figure~\ref{fig:class-curves} shows the classification functions for each
-individual listener. In each accent, these classification functions tend to fall
-in between the boundaries predicted by the typical talker distributions and the
-boundaries implied by the exposure distributions.  We can quantify this by the
-percentage of the predicted shift in category boundary from the classification
-function for the typical talker to the boundary implied by the input
-distribution (Table~\ref{tab:boundary-shift}). A 0\% shift corresponds to no
-adaptation at all, while a shift of 100\% corresponds to complete adaptation to
-the exposure distributions, with no (remaining) influence of the typical talker.
-
-In all conditions, the average shift percentage was between 0\% and 100\%
-(except the 0ms shift condition, which is so close to the typical talker that
-estimating the percentage is numerically unstable). More interestingly, the more
-extreme conditions show less complete adaptation than the less extreme conditions.
-Together, these results suggest that listeners' adaptation was constrained by
-their prior expectations (given the finite amount of evidence they received
-about the unfamiliar talker).  This provides qualitative evidence that listeners
-combine their prior expectations with observed cue distributions in order to
-rapidly adapt to unfamiliar talkers, as predicted by the ideal adapter framework
-\cite{Kleinschmidt2015}.
 
 \section{Inferring prior beliefs about talker variability} %% [TFJ: how about ``Inferring priors about inter-talker variability'' or something like that?]
 \label{sec:model}
@@ -804,6 +811,10 @@ prior_summary %>%
     prior parameters, given the adaptation data.}
   \label{tab:prior-params}
 \end{table}
+
+<<rounding>>=
+options(digits=0)
+@ 
 
 The second way to evaluate this model is based on the prior beliefs it infers
 listeners to have.  Table~\ref{tab:prior-params} shows the posterior expectation
