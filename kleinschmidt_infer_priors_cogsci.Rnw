@@ -944,6 +944,14 @@ learning provides an approach to probing prior expectations about the
 \emph{statistics} of the sensory world, which, as in speech perception, are
 critical to effectively coping with non-stationarity in sensory statistics.
 
+\section{Acknowledgements}
+\label{sec:acknowledgements}
+
+This work was partially funded by an NSF Graduate Research Fellowship to DFK and
+NIHCD R01 HD075797 as well as an Alfred P. Sloan Fellowship to TFJ. The views
+expressed here are those of the authors and not necessarily those of the funding
+agencies.
+
 \bibliographystyle{apacite}
 
 \setlength{\bibleftmargin}{.125in}
