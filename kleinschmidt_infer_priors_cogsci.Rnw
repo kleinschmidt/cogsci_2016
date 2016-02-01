@@ -45,7 +45,9 @@
   which is costly to collect and annotate, and only indirectly related to
   listeners' subjective expectations.
   
-  \textbf{Keywords:} Cognitive Science, Linguistics, Psychology, Language understanding, Learning, Speech recognition
+  \textbf{Keywords:} Cognitive Science, Linguistics, Psychology, Language
+  understanding, Learning, Speech recognition, Bayesian modeling, Experimental
+  research with adult humans
 \end{abstract}
 
 
