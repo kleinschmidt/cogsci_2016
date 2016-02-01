@@ -112,7 +112,8 @@ produced a distribution of cues for the /b/ and /p/ sounds that had
 substantially lower means than a typical talker.  
 
 However, no studies have systematically probed whether and how a listener's
-prior expectations constrain phonetic adaptation.  To that end, we expose listeners
+prior expectations constrain phonetic adaptation, or even what kind of prior
+beliefs listeners have.  To that end, we expose listeners
 to a range of different accents, which differ (only) in the cue distributions for /b/
 and /p/.  By parametrically manipulating these distributions, we create a range
 of accents that are more or less similar to what a typical talker of English
@@ -120,26 +121,21 @@ produces. We then assess the degree to which listeners adapt their beliefs about
 the novel talker's cue distributions, depending on the {\em a priori} typicality 
 of these distributions.
 
-To anticipate the results, we find that typicality of the novel talker's cue 
-distribution predicts the degree to which listeners adapt to the talker. This 
-suggests that listeners not only have beliefs about the {\em average} distribution
-of cues (as suggested in previous work, [TFJ: REF]), but also have implicit 
-beliefs about the ways in which talkers tend to differ from each other. This 
-emphasized the second question we seek to address: what is the nature of these 
-beliefs about inter-talker variability? We use the behavioral data 
-obtained in our experiment to \emph{infer} listeners' underlying prior beliefs 
-about the way in which talkers differ from each other (in the distributions of 
-cues to /b/ and /p/ that they produce). Previous work has used similar data to 
-infer prior beliefs about {\em average} cue distributions (e.g., to /b/ and /p/), 
-in essence assuming stationarity of these distributions across talkers [TFJ: REF]. 
-In investigating in what ways listeners believe these distributions to vary across talkers, 
-we aim to shed light on the mechanisms and representations that afford robust 
-speech perception despite inter-talker variability in the realization of phonetic
-categories. [TFJ: could be shortened; just trying to make the point] By aiming to
-infer these priors from {\em perception} data, we explore an approach that in the future 
-could avoid the need for costly and time-consuming annotation of production data from many
-different talkers. This would provide a powerful method for investigating listeners'
-prior beliefs that could be applied to other cues, categories, and
+To anticipate the results, we find that typicality of the novel talker's cue
+distribution predicts the degree to which listeners adapt to the talker. This
+suggests that listeners not only have beliefs about the cue distrbutions for a
+\emph{particular} single talker (as suggested by previous work;
+\citeNP{Clayards2008, Feldman2009, Kleinschmidt2015, Kronrod2012}), but also
+have implicit beliefs about the ways in which talkers tend to \emph{differ} from
+each other, and hence what to expect from an unfamiliar talker. This leads to
+the second question we address here: what is the content of listeners' prior
+beliefs about inter-talker variability? To this end, we use a Bayesian
+belief-updating model to work backwards from listeners' adaptation behavior
+across talkers and \emph{infer} listeners' shared prior beliefs.  By inferring
+these priors from {\em perception} data, this approach has the potential to
+avoid the need for costly and time-consuming annotation of production data from
+many different talkers. This would provide a powerful method for investigating
+listeners' prior beliefs that could be applied to other cues, categories, and
 even social variables (like gender, native language background, etc.).
 
 \section{Experiment}
@@ -461,11 +457,11 @@ combine their prior expectations with observed cue distributions in order to
 rapidly adapt to unfamiliar talkers, as predicted by the ideal adapter framework
 \cite{Kleinschmidt2015}.
 
-\section{Inferring prior beliefs from adpatation} %% [TFJ: how about ``Inferring priors about inter-talker variability'' or something like that?]
+\section{Inferring prior beliefs about talker variability} %% [TFJ: how about ``Inferring priors about inter-talker variability'' or something like that?]
 \label{sec:model}
 
 Our second goal in this paper is to test whether it is possible to infer
-listeners' prior beliefs 
+listeners' prior beliefs about talker variability,
 %% [TFJ: here and elsewhere: I think it's important to be clear what type of prior beliefs you mean; hence 
 %% also my edits in the intro; there and in the discussion, I think it's particularly important to be clear that you're not just
 %% inferring talker-marginalized category-specific cue distributions] 
@@ -866,11 +862,11 @@ encountered in our experiment.
 
 At first blush, this conflicts with previous 
 work on another phonetic contrast, /b/-/d/, which found confidence values that 
-were one or two orders of magnitude smaller than those inferred here {Kleinschmidt2015}. 
+were one or two orders of magnitude smaller than those inferred here \cite{Kleinschmidt2015}. 
 Interestingly, the /b/-/d/ contrast is cued by spectral cues (formant frequency transitions) which generally vary
-substantially across talkers \cite{Hillenbrand1995, Peterson1952}.  The
+substantially across talkers \cite<e.g.,>{Peterson1952}.  The
 acoustic cues to the /b/-/p/ contrast used in the current study do not show as
-much variability across talkers \cite{Allen2003, Chodroff2015}.  When there is
+much variability across talkers \cite<e.g.,>{Allen2003, Chodroff2015}.  When there is
 little variability across talkers, past experience with other talkers' VOT
 distributions is highly informative about the distributions that an unfamiliar
 talker will produce, requiring less adaptation.  Likewise, when there is more
@@ -883,7 +879,7 @@ weighted according to confidence.  This idea finds
 further empirical support in \citeA{Kraljic2007}, who found that after the same
 amount of exposure, listeners recalibrate a /d/-/t/ contrast (analogous to the
 /b/-/p/ contrast used here) much less than an /s/-\ph S contrast (where the latter exhibits larger
- variability across talkers; \citeNP{McMurray2011a, Newman2001}).
+ variability across talkers; e.g., \citeNP{Newman2001}).
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -917,7 +913,7 @@ robust speech perception.
 
 More generally, prior knowledge is increasingly understood to play in important
 role in a number of perceptual and memory domains
-\cite<e.g.,>{Brady2009,Brady2013,Froyen2015a,Orhan2011}.  Distributional
+\cite<e.g.,>{Brady2013,Froyen2015a,Orhan2011}.  Distributional
 learning provides an approach to probing prior expectations about the
 \emph{statistics} of the sensory world, which, as in speech perception, are
 critical to effectively coping with non-stationarity in sensory statistics.
