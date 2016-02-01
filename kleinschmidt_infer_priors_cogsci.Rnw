@@ -20,7 +20,7 @@
  
 \author{{\large \bf Dave F. Kleinschmidt$^1$}, and 
    {\large \bf T. Florian Jaeger$^{1,2,3}$} \\
-   \texttt{\{dkleinschmidt, fjeager\} $@$ bcs.rochester.edu} \\
+   \texttt{\{dkleinschmidt, fjeager\} $@$ mail.bcs.rochester.edu} \\
   $^1$Department of Brain and Cognitive Sciences, $^2$Department of Computer Science, and $^3$Department of Linguistics, \\
   University of Rochester, Rochester, NY, 14607 USA}
 
@@ -230,7 +230,7 @@ We tested the role that listeners prior expectations play in adapting to an
 unfamiliar talker by exposing them to one of five synthetic ``accents''
 (Figure~\ref{fig:vot-dists}). These accents differed only in the distribution of
 voice onset time (VOT), the primary cue to word-initial stop consonant voicing
-in English (e.g., ``beach'' vs. ``peach''). Learning was assessed based on
+in English (e.g., ``beach'' vs. ``peach''). Adaptation was assessed based on
 listeners' classification function, or how they labeled each VOT as /b/ or /p/.
 
 \subsection{Methods}
@@ -437,7 +437,7 @@ percentage of the predicted shift in category boundary from the classification
 function for the typical talker to the boundary implied by the input
 distribution (Table~\ref{tab:boundary-shift}). A 0\% shift corresponds to no
 adaptation at all, while a shift of 100\% corresponds to complete adaptation to
-the exposure distributions, with no (remaining) influence of the typical talker.
+the exposure distributions, with no (remaining) influence of any prior beliefs.
 
 In all conditions, the average shift percentage was between 0\% and 100\%
 (except the 0ms shift condition, which is so close to the typical talker that
@@ -652,7 +652,7 @@ pseudocounts (which is essentially uniform on the whole range from completely
 ignoring prior beliefs to not adapting at all).  The prior for the lapsing rate
 was uniform on $[0,1]$.  We ran four chains for 1000 samples each, discarding
 the first 500 as burn-in for a total of 2000 samples overall. This sampler
-converged well and achieved good mixing (maximum Gelman-Rubin
+converged well and achieved good mixing (maximum
 $\hat{R}= \Sexpr{round(max_Rhat, 3)}$; \citeNP{Gelman1992}).
 
 \subsection{Results}
@@ -828,7 +828,7 @@ in the category means ($E(\kappa_0) = \Sexpr{prior_expected['kappa_0']}$).  Both
 of these (measured in pseudo-observations) are larger than the number of trials
 that listeners heard in the experiment (222), which means that as far as the
 belief-updating model is concerned, listeners updated beliefs reflected their
-prior belies as much as (in the case of the means) or more than (for the
+prior beliefs as much as (in the case of the means) or more than (for the
 variances) the distributions they actually observed.  This is consistent with
 the qualitative finding that listeners' category boundaries are intermediate
 between the boundaries corresponding to a typical talker and the experimental
@@ -948,7 +948,7 @@ coping with non-stationarity in sensory statistics.
 \label{sec:acknowledgements}
 
 This work was partially funded by an NSF Graduate Research Fellowship to DFK and
-NIHCD R01 HD075797 as well as an Alfred P. Sloan Fellowship to TFJ. The views
+NICHD R01 HD075797 as well as an Alfred P. Sloan Fellowship to TFJ. The views
 expressed here are those of the authors and not necessarily those of the funding
 agencies.
 
