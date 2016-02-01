@@ -22,7 +22,7 @@
    {\large \bf T. Florian Jaeger$^{1,2,3}$} \\
    \texttt{\{dkleinschmidt, fjeager\} $@$ mail.bcs.rochester.edu} \\
   $^1$Department of Brain and Cognitive Sciences, $^2$Department of Computer Science, and $^3$Department of Linguistics, \\
-  University of Rochester, Rochester, NY, 14607 USA}
+  University of Rochester, Rochester, NY, 14627 USA}
 
 
 \begin{document}
