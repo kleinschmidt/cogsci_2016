@@ -10,7 +10,7 @@ devtools::install_github('kleinschmidt/phonetic-sup-unsup')
 devtools::install_github('kleinschmidt/beliefupdatr')
 ```
 
-The Makefile builds the paper using `knitr` and `pdflatex`
+The Makefile builds the paper from the [Rnw source](kleinschmidt_infer_priors_cogsci.Rnw) using `knitr` and `pdflatex`
 
 ```shell
 $ make
