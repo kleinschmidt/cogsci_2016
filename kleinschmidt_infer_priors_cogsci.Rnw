@@ -64,6 +64,7 @@ knitr::opts_chunk$set(echo=FALSE,
 
 options(scipen = 2, digits = 2)
 
+## devtools::install_github('kleinschmidt/phonetic-sup-unsup')
 library(supunsup)
 
 library(dplyr)
@@ -566,7 +567,8 @@ attentional blinks, see \citeNP{Clayards2008} for a discussion).
 data_stan_conj <- data %>%
   supunsup::supunsup_to_stan_conj()
 
-## mod_lapsing <- stan('../../modeling/stan/conj_id_lapsing_fit.stan')
+## devtools::install_github('kleinschmidt/beliefupdatr')
+## mod_lapsing <- beliefupdatr::compile_stan("conj_id_lapsing_fit.stan")
 
 ## fit_lapsing <- stan(fit = mod_lapsing,
 ##                     data = data_stan_conj,
