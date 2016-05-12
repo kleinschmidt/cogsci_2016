@@ -16,6 +16,14 @@
 
 \newcommand{\ud}{\mathrm{d}}
 
+% blank footnote
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
 \title{What do you expect from an unfamiliar talker?}
  
 \author{{\large \bf Dave F. Kleinschmidt$^1$}, and 
@@ -89,6 +97,7 @@ library(lme4)
 
 \section{Introduction}
 \label{sec:introduction}
+\blfootnote{Code and data to generate this paper is available from \texttt{github.com/kleinschmidt/cogsci\_2016}}
 
 A longstanding problem in speech perception is how listeners manage to cope with
 substantial differences in how individual talkers produce speech.  Recent
