@@ -146,12 +146,13 @@ each other, and hence what to expect from an unfamiliar talker. This leads to
 the second question we address here: what is the content of listeners' prior
 beliefs about inter-talker variability? To this end, we use a Bayesian
 belief-updating model to work backwards from listeners' adaptation behavior
-across talkers and \emph{infer} listeners' shared prior beliefs.  By inferring
-these priors from {\em perception} data, this approach has the potential to
-avoid the need for costly and time-consuming annotation of production data from
-many different talkers. This would provide a powerful method for investigating
-listeners' prior beliefs that could be applied to other cues, categories, and
-even social variables (like gender, native language background, etc.).
+across talkers and \emph{infer} listeners' shared prior beliefs.  This approach
+provides a more direct assessment of listeners' subjective prior beliefs than
+production data from many different talkers, which moreover requires costly and
+time-consuming annotation.  If successful, this would provide a powerful method for
+investigating listeners' prior beliefs that could be applied to other cues,
+categories, and even social variables (like gender, native language background,
+etc.).
 
 \section{Experiment}
 \label{sec:experiment}
