@@ -547,17 +547,17 @@ $x$) using Bayesian inference, marginalizing over $\theta$:
                            p(\phi)
 \end{eqnarray}
 
-We make the simplifying assumptions that the order of the trials does not
-matter for the current purpose, and that %for the purposes of belief updating ($p(\theta | x, \phi)$) 
-the category labels that we, the experimenters, assigned to each cluster are known.
-This is equivalent to assuming that listeners pick up on the cluster structure
+We two simplifying assumptions. First, we assume that the order of the trials does not
+matter.
+Second, we assume that listeners pick up on the cluster structure
 of the input they receive, accurately detecting the mean and variance of each
-cluster, and find a compromise between these observed statistics and their
-prior beliefs, possibly revising earlier decisions they made about assigning
-stimuli to one category or the other.  Backing off this assumption is possible
-but computationally more demanding, and we leave it as a question for future work. 
-This simplifying assumption does not, as far as we can determine, bias our results.
-Finally, we also add a small lapse rate parameter, that allows for some
+cluster, 
+but for categorizing they use their \emph{posterior} beliefs which combine their
+prior beliefs with these observed statistics.
+Backing off these assumptions is possible,
+but computationally more demanding, and we leave it for future work to determine
+how they might affect our results.
+Finally, we also add a lapse rate parameter (maximum a posteriori value of $5\%$), that allows for some
 proportion of responses to be attributed to random guessing (e.g., because of 
 attentional blinks, see \citeNP{Clayards2008} for a discussion).
 
